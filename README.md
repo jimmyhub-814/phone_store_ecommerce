@@ -1,16 +1,39 @@
-# phoneStore
+# 📱 Phone Store App
 
-A new Flutter project.
+A Flutter-based eCommerce mobile application for buying and selling smartphones.  
+The app includes authentication, product browsing, cart management, and order features with Firebase backend integration.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+- 🔐 User authentication (Firebase Auth)
+- 📱 Browse smartphone products
+- 🛒 Add to cart & manage cart items
+- ❤️ Favorite products
+- 📦 Order placement & tracking
+- 🔔 Firebase Cloud Messaging notifications
+- ☁️ Firebase backend integration
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Tech Stack
+
+- Flutter (Dart)
+- Firebase (Auth, Firestore, Messaging)
+- Provider State Management
+
+---
+
+## 📸 Screenshots
+
+*(Add your app screenshots here)*
+
+---
+
+## 🚀 Getting Started
+
+Clone the repository:
+
+```bash
+git clone https://github.com/jimmyhub-814/phone_store_ecommerce
