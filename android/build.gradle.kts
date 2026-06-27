@@ -20,11 +20,10 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
     
-    // --- ĐOẠN MÃ SỬA LỖI NAMESPACE BẮT ĐẦU TẠI ĐÂY ---
     afterEvaluate {
         if (project.hasProperty("android")) {
             val android = project.extensions.getByName("android") as com.android.build.gradle.BaseExtension
-            // Kiểm tra nếu namespace trống thì tự động điền dựa trên group hoặc name của project
+          
             if (android.namespace == null) {
                 android.namespace = project.group.toString().ifEmpty { 
                     "com.flutter.fallback.${project.name.replace("-", "_")}" 
@@ -40,4 +39,10 @@ subprojects {
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
+}
+
+buildscript {
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.2")
+    }
 }

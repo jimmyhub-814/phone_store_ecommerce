@@ -1,16 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:phone_store/main.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/detailOrder.dart';
+import 'package:phone_store/main/pages/order/order_detail.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
-  print('🔔 Notification tapped (background): ${notificationResponse.payload}');
+  print('🔔 Background tap payload: ${notificationResponse.payload}');
 }
 
 class NotificationService {
@@ -25,7 +26,6 @@ class NotificationService {
     requestPermission();
   }
 
-  /// Xin quyền thông báo
   Future<void> requestPermission() async {
     try {
       NotificationSettings settings = await _messaging.requestPermission(
@@ -37,10 +37,9 @@ class NotificationService {
       if (settings.authorizationStatus == AuthorizationStatus.denied) {
         Get.snackbar(
           'Notification Permission',
-          'Please enable notifications in settings.',
+          'Vui lòng bật thông báo trong cài đặt.',
           snackPosition: SnackPosition.BOTTOM,
         );
-
         Future.delayed(const Duration(seconds: 3)).then((_) {
           AppSettings.openAppSettings(type: AppSettingsType.notification);
         });
@@ -52,7 +51,6 @@ class NotificationService {
     }
   }
 
-  /// Khởi tạo local notification
   Future<void> initLocalNotifications() async {
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
@@ -64,8 +62,7 @@ class NotificationService {
 
     await _localNotificationsPlugin.initialize(
       initSettings,
-      onDidReceiveNotificationResponse: (response) {
-        print("👉 Notification tapped with payload: ${response.payload}");
+      onDidReceiveNotificationResponse: (response) {  
         _handleMessage(response.payload);
       },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
@@ -92,12 +89,16 @@ class NotificationService {
         ?.createNotificationChannel(channel);
   }
 
-  /// LISTENER FCM
   void configureFCMListeners() {
-    // Foreground
     FirebaseMessaging.onMessage.listen((message) {
-      final title = message.notification?.title ?? message.data['title'];
-      final body = message.notification?.body ?? message.data['body'];
+      print("🔥 FOREGROUND");
+      final title = message.data['title'];
+      final body = message.data['body'];
+
+      if (message.data.isEmpty && message.notification == null) {
+        print("🚫 Empty message ignored");
+        return;
+      }
 
       _localNotificationsPlugin.show(
         DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -115,80 +116,73 @@ class NotificationService {
       );
     });
 
-    // Background tap
-     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      final orderId = message.data['orderId'];
-      if (orderId != null) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          MyApp.navigatorKey.currentState?.pushNamed(
-            DetailOrder.routeName,
-            arguments: DetailOrder(orderId: orderId.toString()),
-          );
-        });
-      }
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print("🔥 OPENED APP");
+      _handleMessage(jsonEncode(message.data));
     });
   }
 
-// ✅ Tách riêng hàm này
-Future<void> checkInitialMessage() async {
-    final message = await _messaging.getInitialMessage();
-    if (message != null) {
-      await Future.delayed(const Duration(milliseconds: 800));
-
-      // ✅ Lấy đúng field
-      final orderId = message.data['orderId'] ?? message.data['id'];
-      if (orderId != null) {
-        MyApp.navigatorKey.currentState?.pushNamed(
-          DetailOrder.routeName,
-          arguments: DetailOrder(orderId: orderId.toString()),
-        );
-      }
-    }
-  }
-
-  /// SHOW LOCAL NOTIFICATION
-
-  /// XỬ LÝ PAYLOAD + ĐIỀU HƯỚNG
-  void _handleMessage(String? payload) {
+  void _handleMessage(String? payload) async {
     if (payload == null || payload.isEmpty) return;
 
     try {
-      final Map<String, dynamic> data = jsonDecode(payload);
-
-      print("📌 Payload decode thành công: $data");
-
-      final orderId = data['orderId'];
-
-      if (orderId != null) {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          Get.to(
-            () => DetailOrder(
-              orderId: orderId,
-            ),
-          );
-        });
+      final data = jsonDecode(payload);
+      final orderId = data['orderId']?.toString();
+      if (orderId == null || orderId.isEmpty) return;
+ 
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print("⏳ Chờ auth state...");
+        user = await FirebaseAuth.instance
+            .authStateChanges()
+            .where((u) => u != null)
+            .first
+            .timeout(const Duration(seconds: 5), onTimeout: () => null);
       }
+
+      if (user == null) {
+        print("❌ Không có user, bỏ qua navigate");
+        return;
+      }
+
+      await user.getIdToken(true);
+      await Future.delayed(const Duration(milliseconds: 500));
+      print("✅ Token refreshed, navigate...");
+
+      MyApp.navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => DetailOrder(orderId: orderId),
+        ),
+      );
     } catch (e) {
-      print("❌ Error decoding payload: $e");
+      print("❌ Error handling message: $e");
     }
   }
 
-  void handleMessageFromOutside(Map<String, dynamic> data) {
-    final orderId = data['orderId'];
-    if (orderId != null) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        MyApp.navigatorKey.currentState?.pushNamed(
-          DetailOrder.routeName,
-          arguments: DetailOrder(orderId: orderId),
-        );
-      });
+  Future<void> handleKilledStateMessage() async {
+    final message = await FirebaseMessaging.instance.getInitialMessage();
+    if (message == null) return;
+
+    print("💀 Killed state message: ${message.data}");
+
+    int attempts = 0;
+    while (MyApp.navigatorKey.currentState == null && attempts < 20) {
+      await Future.delayed(const Duration(milliseconds: 250));
+      attempts++;
+      print("⏳ Waiting for navigator... attempt $attempts");
     }
+
+    if (MyApp.navigatorKey.currentState == null) {
+      print("❌ Navigator vẫn null sau ${attempts * 250}ms, bỏ qua");
+      return;
+    }
+
+    print("✅ Navigator ready sau ${attempts * 250}ms");
+    _handleMessage(jsonEncode(message.data));
   }
 
-  /// Lấy FCM token
   Future<String> getDeviceToken() async {
     try {
-      print("🔍 Đang gọi _messaging.getToken()");
       String? token = await _messaging.getToken();
       if (token != null) {
         print("📱 FCM Token: $token");

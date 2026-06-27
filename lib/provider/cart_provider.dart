@@ -1,10 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/models/cart.dart';
-import 'package:phone_store/models/products.dart';
 import 'dart:async';
+
+import 'package:phone_store/provider/product_provider.dart';
+import 'package:provider/provider.dart';
 
 class CartProvider extends ChangeNotifier {
   final user = AuthHelper.userId;
@@ -12,13 +14,8 @@ class CartProvider extends ChangeNotifier {
   List<Cart> _cart = [];
   List<Cart> get cart => [..._cart];
 
-  List<Product> _productList = [];
-  List<Product> get productList => [..._productList];
-
   final Map<String, bool> _selectedItems = {};
   Map<String, bool> get selectedItems => {..._selectedItems};
-
-  Map<String, int> localQuantity = {};
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
@@ -27,76 +24,53 @@ class CartProvider extends ChangeNotifier {
 
   CartProvider() {
     listenCart();
-    init();
-  }
-  Future<void> init() async {
-    _isLoading = true;
-    notifyListeners();
-
-    await getAllProducts();
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   void listenCart() {
-    print("🔥 listenCart CALLED");
+    debugPrint("🔥 listenCart CALLED");
 
     _cartSub?.cancel();
 
     try {
-      _cartSub = Collections.cart(user!).snapshots().listen((snapshot) {
-        print("📦 CART UPDATE: ${snapshot.docs.length}");
+      _cartSub = Collections.cart(user!).snapshots().listen(
+        (snapshot) {
+          debugPrint("📦 CART UPDATE: ${snapshot.docs.length}");
 
-        final List<Cart> temp = [];
+          final List<Cart> temp = [];
 
-        for (final doc in snapshot.docs) {
-          final data = doc.data();
+          for (final doc in snapshot.docs) {
+            final data = doc.data();
 
-          if (data[Cart.productIdField] == null ||
-              data[Cart.variantsIdField] == null) {
-            print("❌ SKIP INVALID CART: ${doc.id}");
-            continue;
+            if (data[Cart.productIdField] == null ||
+                data[Cart.variantsIdField] == null) {
+              debugPrint("❌ SKIP INVALID CART: ${doc.id}");
+              continue;
+            }
+
+            temp.add(Cart.fromMap(data));
           }
 
-          temp.add(Cart.fromMap(data));
-        }
+          _cart = temp;
 
-        _cart = temp;
-
-        _isLoading = false;
-        notifyListeners();
-      });
+          _isLoading = false;
+          notifyListeners();
+        },
+        onError: (error) {
+          debugPrint("❌ CART STREAM ERROR: $error");
+          _isLoading = false;
+          notifyListeners();
+        },
+      );
     } catch (e) {
-      print("❌ STREAM ERROR: $e");
+      debugPrint("❌ STREAM ERROR: $e");
     }
   }
 
-  // -----------------------
-  // GET ALL PRODUCTS
-  // -----------------------
-  Future<List<Product>> getAllProducts() async {
-    _isLoading = true;
-
-    final querySnapshot = await Collections.products.get();
-    _productList.clear();
-
-    for (var doc in querySnapshot.docs) {
-      try {
-        _productList.add(Product.fromMap(doc.data()));
-      } catch (e) {
-        print("❌ Lỗi parse product: ${doc.id} - $e");
-      }
-    }
-
-    _isLoading = false;
-    return _productList;
+  @override
+  void dispose() {
+    _cartSub?.cancel();
+    super.dispose();
   }
-
-  // -----------------------
-  // FETCH CART LIST
-  // -----------------------
-
 
   Future<void> fetchCartList() async {
     _isLoading = true;
@@ -108,13 +82,9 @@ class CartProvider extends ChangeNotifier {
       return Cart.fromMap(doc.data());
     }).toList();
 
-    _productList = await getAllProducts();
-
     _isLoading = false;
     notifyListeners();
   }
-  // -----------------------
-  // ADD TO CART
 
   Future<void> addCart(
       String productId, int quantity, String variantsId) async {
@@ -144,28 +114,10 @@ class CartProvider extends ChangeNotifier {
     });
   }
 
-  // -----------------------
-  // REMOVE ITEM
-  // -----------------------
   Future<void> removeFromCart(String id) async {
     await Collections.cart(user!).doc(id).delete();
   }
 
-  // // -----------------------
-  // // INCREASE QUANTITY
-  // // -----------------------
-  void increaseLocal(String productId, String variantsId) {
-    int index = _cart.indexWhere(
-        (c) => c.productId == productId && c.variantsId == variantsId);
-    if (index == -1) return;
-
-    _cart[index].quantity++;
-    notifyListeners();
-  }
-
-  // -----------------------
-  // DECREASE QUANTITY
-  // -----------------------
   Future<void> decrease(String id) async {
     final docRef = Collections.cart(user!).doc(id);
 
@@ -178,32 +130,29 @@ class CartProvider extends ChangeNotifier {
     }
   }
 
-  // -----------------------
-  // DELETE SELECTED ITEMS
-  // -----------------------
   Future<void> deleteProductById() async {
     final selectedKeys =
         _selectedItems.entries.where((e) => e.value).map((e) => e.key).toList();
 
+    if (selectedKeys.isEmpty) return;
+
+    final batch = firestore.batch();
     for (var key in selectedKeys) {
-      await Collections.cart(user!).doc(key).delete();
+      batch.delete(Collections.cart(user!).doc(key));
     }
+    await batch.commit();
   }
 
-  // -----------------------
-  // DELETE WHEN BUY
-  // -----------------------
   Future<void> deleteProductWhenBuy(List<String> buyItems) async {
     if (buyItems.isEmpty) return;
 
-    _cart = _cart.where((item) {
-      return !buyItems.contains(item.id);
-    }).toList();
+    final batch = firestore.batch();
+    for (final id in buyItems) {
+      batch.delete(Collections.cart(user!).doc(id));
+    }
+    await batch.commit();
   }
 
-  // -----------------------
-  // CHECKBOX
-  // -----------------------
   void toggleSelection(String id) {
     _selectedItems[id] = !(_selectedItems[id] ?? false);
     notifyListeners();
@@ -213,19 +162,21 @@ class CartProvider extends ChangeNotifier {
     return _selectedItems.values.where((v) => v == true).length.toString();
   }
 
-  // -----------------------
-  // TOTAL PRICE
-  // -----------------------
-  double getTotalItemCount() {
+  Future<double> getTotalItemCount(BuildContext context) async {
     double total = 0;
+    final productProvider = context.read<ProductProvider>();
 
     for (var cartItem in _cart) {
       if (_selectedItems[cartItem.id] != true) continue;
 
-      final product =
-          _productList.firstWhere((p) => p.id == cartItem.productId);
-      final variant =
-          product.listVariants.firstWhere((v) => v.id == cartItem.variantsId);
+      final product = await productProvider.getProduct(cartItem.productId);
+
+      if (product == null) continue;
+
+      final variant = product.listVariants.firstWhere(
+        (v) => v.id == cartItem.variantsId,
+        orElse: () => product.listVariants.first,
+      );
 
       final price = variant.phonePrice -
           (variant.phonePrice * variant.phoneDiscount / 100);

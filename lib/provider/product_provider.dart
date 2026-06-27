@@ -1,17 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
-import 'package:phone_store/models/feedBack.dart';
+import 'package:phone_store/models/feedback.dart';
 import 'package:phone_store/models/products.dart';
+import 'package:phone_store/services/recommendation_product_service.dart';
 
 class ProductProvider extends ChangeNotifier {
   final List<Product> _products = [];
   List<Product> get products => [..._products];
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  final _recommendationService = RecommendationService();
+  List<Product>? _recommendedProducts;
+  List<Product> get recommendedProducts => _recommendedProducts ?? _products;
+  bool _recommendationsLoaded = false;
 
-  Future<void> fetchProductsList() async {
+  Future<void> loadRecommendations() async {
+    print(
+        '🚀 loadRecommendations called, products: ${_products.length}, loaded: $_recommendationsLoaded');
+    if (_products.isEmpty || _recommendationsLoaded) return;
+    if (_products.isEmpty || _recommendationsLoaded) {
+      return;
+    }  
+    _recommendationsLoaded = true; 
+    try {
+      _recommendedProducts =
+          await _recommendationService.getRecommendedProducts(_products);
+    } catch (e, s) {
+      print(e);
+      print(s);
+    }
+    print('_recommendedProducts: ${_recommendedProducts?.length}');
+    notifyListeners();
+  }
+
+  void resetRecommendations() {
+    _recommendedProducts = null;
+    _recommendationsLoaded = false;
+  }
+
+  Future<void> fetchProductsList({bool forceRefresh = false}) async {
     if (_isLoading) return;
-
+    if (_products.isNotEmpty && !forceRefresh) return;
+    _isLoading = true;
+    notifyListeners();
     _isLoading = true;
     notifyListeners();
 
@@ -90,21 +121,22 @@ class ProductProvider extends ChangeNotifier {
   Future<List<Product>> relatedItem(String id, String categoryId) async {
     try {
       final querySnapshot = await Collections.products
-          .where('categoryId', isEqualTo: categoryId)
+          .where(Product.categoryIdField, isEqualTo: categoryId)
           .get();
 
-      List<Product> products = [];
+      List<Product> relatedProducts = [];
 
       for (var doc in querySnapshot.docs) {
         final product = Product.fromMap(doc.data());
 
-        // Loại bỏ chính sản phẩm hiện tại
         if (product.id != id) {
-          products.add(product);
+          relatedProducts.add(product);
         }
       }
-      print('Related products found: ${products.length}');
-      return products;
+      print('Related products found: ${relatedProducts.length}');
+
+      relatedProducts.shuffle();
+      return relatedProducts;
     } catch (e) {
       print('Lỗi khi lấy sản phẩm liên quan: $e');
       return [];
@@ -147,25 +179,22 @@ class ProductProvider extends ChangeNotifier {
     final keywords = query
         .toLowerCase()
         .trim()
-        .split(RegExp(r'\s+')) // tách nhiều khoảng trắng
+        .split(RegExp(r'\s+')) 
         .where((k) => k.isNotEmpty)
         .toList();
 
     return products.where((product) {
       final name = _normalize(product.title);
 
-      // Tìm trong tất cả các field
       return keywords.every((word) => name.contains(word));
     }).toList()
       ..sort((a, b) {
-        // Ưu tiên kết quả khớp với title trước
         final aScore = _scoreMatch(a.title, keywords);
         final bScore = _scoreMatch(b.title, keywords);
         return bScore.compareTo(aScore);
       });
   }
 
-  /// Chuẩn hóa chuỗi: lowercase + bỏ dấu tiếng Việt
   String _normalize(String text) {
     const vietnamese =
         'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ'
@@ -181,14 +210,14 @@ class ProductProvider extends ChangeNotifier {
     return result;
   }
 
-  /// Tính điểm ưu tiên: từ khóa xuất hiện ở đầu title thì điểm cao hơn
   int _scoreMatch(String title, List<String> keywords) {
     final normalized = _normalize(title);
     int score = 0;
+
     for (final word in keywords) {
-      if (normalized.startsWith(word))
+      if (normalized.startsWith(word)) {
         score += 2;
-      else if (normalized.contains(word)) score += 1;
+      } else if (normalized.contains(word)) score += 1;
     }
     return score;
   }

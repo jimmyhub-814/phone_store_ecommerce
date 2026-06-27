@@ -38,7 +38,7 @@ class Product extends ChangeNotifier {
   Map<String, dynamic> toMap() {
     return {
       idField: id,
-      categoryId: categoryId,
+      categoryIdField: categoryId,
       listVariantsField: listVariants.map((v) => v.toMap()).toList(),
       extraImagesField:
           extraImages.isEmpty ? [] : extraImages.map((e) => e).toList(),

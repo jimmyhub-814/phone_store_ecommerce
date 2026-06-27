@@ -13,10 +13,7 @@ class OrderProvider extends ChangeNotifier {
   bool _isLoading = true;
   bool get isLoading => _isLoading;
 
-  // =========================
-  // LOAD ORDERS (REALTIME READY)
-  // =========================
-  Future<void> loadOrders() async {
+  void loadOrders() async {
     _isLoading = true;
     notifyListeners();
 
@@ -52,14 +49,11 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // =========================
-  // REALTIME LISTEN (NÊN DÙNG)
-  // =========================
   Stream<List<UserOrder>> listenOrders() {
     return Collections.orders
         .where("${UserOrder.userInfoField}.${OrderUserInfo.userIdField}",
             isEqualTo: AuthHelper.userId)
-       .orderBy('${UserOrder.orderInfoField}.${OrderInfo.lastStatusTimeField}',
+        .orderBy('${UserOrder.orderInfoField}.${OrderInfo.lastStatusTimeField}',
             descending: true)
         .snapshots()
         .map((snapshot) {
@@ -69,9 +63,6 @@ class OrderProvider extends ChangeNotifier {
     });
   }
 
-  // =========================
-  // GET SINGLE ORDER
-  // =========================
   Future<UserOrder?> getUserOrder(String orderId) async {
     try {
       final doc = await Collections.orders.doc(orderId).get();
@@ -85,9 +76,6 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  // =========================
-  // CREATE ORDER
-  // =========================
   Future<bool> uploadOrderToFirebase(UserOrder order) async {
     try {
       await Collections.orders.doc(order.id).set(order.toMap());
@@ -99,14 +87,9 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  // =========================
-  // UPDATE STATUS
-  // =========================
   Future<void> updateOrder(String orderId, String status) async {
     final statusHistory = StatusHistory(
-        status: OrderStatus.pending.name,
-        updateBy: UpdateBy.system.name,
-        time: Timestamp.now());
+        status: status, updateBy: UpdateBy.user.name, time: Timestamp.now());
     try {
       await Collections.orders.doc(orderId).update({
         "${UserOrder.orderInfoField}.${OrderInfo.orderStatusField}": status,

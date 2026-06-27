@@ -1,18 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:phone_store/app_constants/firestore_collections.dart'; 
+import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/models/category.dart';
 
 class CategoryProvider extends ChangeNotifier {
-  List<Category> _categories = [];
+  final List<Category> _categories = [];
   List<Category> get categories => [..._categories];
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchCategoriesList( ) async {
+  Future<void> fetchCategoriesList() async {
+    if (_isLoading) return;
+
     _isLoading = true;
     notifyListeners();
-    _categories = await getCategories();
 
+    try {
+      final querySnapshot = await Collections.categories.get();
+
+      _categories.clear();
+
+      for (var doc in querySnapshot.docs) {
+        try {
+          final category = Category.fromMap(doc.data());
+
+          if (category.categoryImage.isEmpty ||
+              category.categoryName.isEmpty ||
+              category.id.isEmpty) {
+            continue;
+          }
+          _categories.add(Category.fromMap(doc.data()));
+        } catch (_) {
+          continue;
+        }
+      }
+      
+      _categories.shuffle();
+    } catch (e) {
+      print('❌ Lỗi fetch categories: $e');
+    }
+
+    _isLoading = false;
     notifyListeners();
   }
 

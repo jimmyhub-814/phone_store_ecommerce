@@ -8,14 +8,14 @@ class Variants {
 
   String id;
   String phoneType;
-  String image;
+  String? image;
   double phonePrice;
   int phoneQuantity;
   double phoneDiscount;
 
   Variants({
     required this.id,
-    required this.image,
+    this.image,
     required this.phoneType,
     required this.phoneDiscount,
     required this.phonePrice,
@@ -36,7 +36,7 @@ class Variants {
   factory Variants.fromMap(Map<String, dynamic> map) {
     return Variants(
       id: map[idField] as String,
-      image: map[imageField] as String,
+      image: map[imageField]?.toString(),
       phoneType: map[phoneTypeField] as String,
       phoneDiscount: map[phoneDiscountField] as double,
       phonePrice: map[phonePriceField] as double,

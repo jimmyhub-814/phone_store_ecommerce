@@ -82,12 +82,14 @@ class StatusHistory {
 
 class OrderInfo {
   static const orderStatusField = 'orderStatus';
+  static const orderNoteField = 'orderNote';
   static const orderDateField = 'orderDate';
   static const lastStatusTimeField = 'lastStatusTime';
   static const methodPaymentField = 'methodPayment';
   static const totalPriceField = 'totalPrice';
 
   String orderStatus;
+  String orderNote;
   Timestamp orderDate;
   Timestamp lastStatusTime;
   String methodPayment;
@@ -95,6 +97,7 @@ class OrderInfo {
 
   OrderInfo({
     required this.orderStatus,
+    required this.orderNote,
     required this.lastStatusTime,
     required this.orderDate,
     required this.methodPayment,
@@ -104,6 +107,7 @@ class OrderInfo {
   Map<String, dynamic> toMap() {
     return {
       orderStatusField: orderStatus,
+      orderNoteField: orderNote,
       orderDateField: orderDate,
       lastStatusTimeField: lastStatusTime,
       methodPaymentField: methodPayment,
@@ -114,10 +118,11 @@ class OrderInfo {
   factory OrderInfo.fromMap(Map<String, dynamic> map) {
     return OrderInfo(
       orderStatus: map[orderStatusField] ?? '',
+      orderNote: map[orderNoteField] ?? '',
       lastStatusTime: map[lastStatusTimeField] ?? '',
       orderDate: map[orderDateField] ?? '',
       methodPayment: map[methodPaymentField] ?? '',
-      totalPrice: map[totalPriceField] ?? '',
+      totalPrice: (map[totalPriceField] ?? 0).toDouble(),
     );
   }
 }
@@ -159,7 +164,7 @@ class OrderUserInfo {
       userName: map[userNameField] ?? '',
       userPhone: map[userPhoneField] ?? '',
       userAddress: map[userAddressField] ?? '',
-      userAvatar: map[userAddressField] ?? '',
+      userAvatar: map[userAvatarField] ?? '',
     );
   }
 }
@@ -213,10 +218,10 @@ class OrderProduct {
       variantsId: map[variantsIdField] ?? '',
       variantsName: map[variantsNameField] ?? '',
       phoneName: map[phoneNameField] ?? '',
-      phoneDiscount: map[phoneDiscountField] ?? '',
+      phoneDiscount: (map[phoneDiscountField] ?? 0).toDouble(),
       phoneImage: map[phoneImageField] ?? '',
       quantity: map[quantityField] ?? '',
-      phonePrice: map[phonePriceField] ?? '',
+      phonePrice: (map[phonePriceField] ?? 0).toDouble(),
     );
   }
 }

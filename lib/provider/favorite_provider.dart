@@ -22,9 +22,6 @@ class FavoriteProvider extends ChangeNotifier {
     listenFav();
   }
 
-  // ===============================
-  // REALTIME FAVORITE
-  // ===============================
   void listenFav() {
     _favSub?.cancel();
 
@@ -44,9 +41,6 @@ class FavoriteProvider extends ChangeNotifier {
     });
   }
 
-  // ===============================
-  // TOGGLE FAVORITE (ĐÚNG SCHEMA)
-  // ===============================
   Future<void> toggleFavorite(String productId) async {
     final docRef = Collections.favorite(user).doc(productId);
 
@@ -72,23 +66,14 @@ class FavoriteProvider extends ChangeNotifier {
     }
   }
 
-  // ===============================
-  // CHECK ITEM
-  // ===============================
   bool checkItem(String id) {
     return _favorite.contains(id);
   }
 
-  // ===============================
-  // REMOVE
-  // ===============================
   Future<void> handleRemove(String productId) async {
     await Collections.favorite(user).doc(productId).delete();
   }
 
-  // ===============================
-  // LOAD PRODUCT LIST FROM IDS
-  // ===============================
   Future<List<Product>> loadFavoriteProducts(
     List<String> favoriteIds,
     ProductProvider productProvider,
@@ -109,9 +94,6 @@ class FavoriteProvider extends ChangeNotifier {
     return products;
   }
 
-  // ===============================
-  // DISPOSE (RẤT QUAN TRỌNG)
-  // ===============================
   @override
   void dispose() {
     _favSub?.cancel();

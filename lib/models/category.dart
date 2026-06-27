@@ -23,9 +23,9 @@ class Category {
 
   factory Category.fromMap(Map<String, dynamic> map) {
     return Category(
-      id: map[idField] as String,
-      categoryImage: map[categoryImageField] as String,
-      categoryName: map[categoryNameField] as String,
+      id: map[idField] as String? ?? '',
+      categoryImage: map[categoryImageField] as String? ?? '',
+      categoryName: map[categoryNameField] as String? ?? '',
     );
   }
 }

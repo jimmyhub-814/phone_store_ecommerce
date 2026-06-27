@@ -6,9 +6,11 @@ import 'package:phone_store/models/notifications.dart';
 
 class NotificationProvider extends ChangeNotifier {
   final userId = AuthHelper.userId;
-// USER Notification
-
-//ADD TO Notification
+  @override
+  void notifyListeners() {
+    print("NOTIFICATION PROVIDER NOTIFY");
+    super.notifyListeners();
+  }
 
   void readNotification(String id) async {
     Collections.notifications(userId!).doc(id).set(
@@ -25,16 +27,7 @@ class NotificationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-//SAVE DATA
   void handleRemove(String id) async {
-    // // Tìm thông báo cần xóa
-    // for (int i = 0; i < notification.length; i++) {
-    //   _notification.removeWhere(
-    //     (item) => notification.contains(item.id),
-    //   );
-    // }
-
-    // Xóa khỏi Firestore
     await Collections.notifications(userId!).doc(id).delete();
 
     notifyListeners();
@@ -45,7 +38,6 @@ class NotificationProvider extends ChangeNotifier {
       return Collections.notifications(userId!).snapshots().map(
         (snapshot) {
           if (snapshot.docs.isEmpty) {
-            print("⚠️ Không có tài liệu thông báo nào cho user: $userId");
             return [];
           }
 

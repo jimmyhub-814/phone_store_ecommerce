@@ -1,8 +1,28 @@
+// ===============================
+// DART CORE
+// ===============================
 import 'dart:async';
-import 'package:app_links/app_links.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:convert';
+
+// ===============================
+// FLUTTER SDK
+// ===============================
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+// ===============================
+// FIREBASE
+// ===============================
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+
+// ===============================
+// THIRD-PARTY PACKAGES
+// ===============================
+import 'package:app_links/app_links.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -10,95 +30,129 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:provider/provider.dart';
+
+// ===============================
+// APP CONSTANTS / CONFIG
+// ===============================
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_fonts.dart';
+import 'package:phone_store/app_constants/app_local_messages.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
-import 'package:phone_store/cubit/messages_cubic.dart';
-import 'package:phone_store/main/auth/auth_gate.dart';
-import 'package:phone_store/firebase_options.dart';
-import 'package:phone_store/main/auth/link_phone.dart';
-import 'package:phone_store/main/auth/otpChangeEmail.dart';
-import 'package:phone_store/main/auth/otp_reset_password.dart';
-import 'package:phone_store/main/pages/home/hamburger/account.dart';
-import 'package:phone_store/main/pages/home/hamburger/failToOrder.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/cancelOrder.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/changeInfoOrder.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/chatAI.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/chatBox.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/detailOrder.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/enterNewEmail.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/feedBack.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/order_info.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/order_status.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/user_info.dart';
-import 'package:phone_store/main/pages/home/mainPage/category.dart';
-import 'package:phone_store/main/auth/login_page.dart';
-import 'package:phone_store/main/pages/home/hamburger/permission/permission_page.dart';
-import 'package:phone_store/main/pages/home/hamburger/support.dart';
-import 'package:phone_store/main/pages/home/mainPage/home_page.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/changePassPage.dart';
-import 'package:phone_store/main/pages/home/mainPage/buyItem.dart';
-import 'package:phone_store/main/pages/home/mainPage/home_body.dart';
-import 'package:phone_store/main/pages/home/mainPage/phone_profile.dart';
-import 'package:phone_store/main/pages/home/hamburger/sucess.dart';
-import 'package:phone_store/main/pages/home/hamburger/widgets/chat.dart';
-import 'package:phone_store/main/pages/home/mainPage/search_page.dart';
-import 'package:phone_store/main/pages/home/mainPage/cartPage.dart';
-import 'package:phone_store/models/notifications.dart';
+import 'package:phone_store/app_constants/firebase_options.dart';
+
+// ===============================
+// MODELS
+// ===============================
 import 'package:phone_store/models/user.dart';
+
+// ===============================
+// PROVIDERS (STATE MANAGEMENT)
+// ===============================
+import 'package:phone_store/provider/auth_provider.dart';
 import 'package:phone_store/provider/category_provider.dart';
 import 'package:phone_store/provider/favorite_provider.dart';
-import 'package:phone_store/provider/messageAI_provider.dart';
 import 'package:phone_store/provider/notification_provider.dart';
 import 'package:phone_store/provider/order_provider.dart';
 import 'package:phone_store/provider/product_provider.dart';
 import 'package:phone_store/provider/cart_provider.dart';
 import 'package:phone_store/provider/user_provider.dart';
+
+// ===============================
+// SERVICES
+// ===============================
 import 'package:phone_store/services/notification_service.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
+
+// ===============================
+// CUBITS (BLoC STATE MANAGEMENT)
+// ===============================
+import 'package:phone_store/cubit/conversation_cubit.dart';
+import 'package:phone_store/cubit/gemini_ai_cubit.dart';
+import 'package:phone_store/cubit/messages_cubit.dart';
+
+// ===============================
+// AUTH PAGES
+// ===============================
+import 'package:phone_store/main/auth/auth_gate.dart';
+import 'package:phone_store/main/auth/login.dart';
+import 'package:phone_store/main/auth/complete_profile_page.dart';
+
+// ===============================
+// MAIN PAGES (HOME / NAVIGATION)
+// ===============================
+import 'package:phone_store/main/pages/mainPage/home_page.dart';
+import 'package:phone_store/main/pages/mainPage/category.dart';
+import 'package:phone_store/main/pages/mainPage/search_page.dart';
+import 'package:phone_store/main/pages/mainPage/cart_page.dart';
+import 'package:phone_store/main/pages/mainPage/phone_profile.dart';
+
+// ===============================
+// ORDER FLOW PAGES
+// ===============================
+import 'package:phone_store/main/pages/order/checkout_order.dart';
+import 'package:phone_store/main/pages/order/order_detail.dart';
+import 'package:phone_store/main/pages/order/sucess.dart';
+import 'package:phone_store/main/pages/order/fail_to_order.dart';
+import 'package:phone_store/main/pages/order/cancel_order.dart';
+import 'package:phone_store/main/pages/order/change_order_info.dart';
+import 'package:phone_store/main/pages/order/shipping_info_page.dart';
+
+// ===============================
+// HAMBURGER MENU / USER FEATURES
+// ===============================
+import 'package:phone_store/main/pages/hamburger/account.dart';
+import 'package:phone_store/main/pages/hamburger/support.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/chat_with_AI.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/chat_with_seller.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/feedback.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/order_status.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/user_info.dart';
+
+// ===============================
+// NOTIFICATIONS
+// ===============================
+import 'package:phone_store/main/pages/notification/notification.dart';
 
 @pragma('vm:entry-point')
-Future<void> _firebaseBackgroundHandler(RemoteMessage notification) async {
+Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final plugin = FlutterLocalNotificationsPlugin();
 
   const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
+  await plugin.initialize(const InitializationSettings(android: androidInit));
 
-  const initSettings = InitializationSettings(android: androidInit);
+  final title = message.data['title'] ?? 'Thông báo mới';
+  final body = message.data['body'] ?? '';
+  final payload = jsonEncode(message.data);
 
-  await flutterLocalNotificationsPlugin.initialize(initSettings);
-
-  final title = notification.data[NotificationList.titleField];
-  final body = notification.data[NotificationList.bodyField];
-
-  await flutterLocalNotificationsPlugin.show(
-    0,
+  await plugin.show(
+    DateTime.now().millisecondsSinceEpoch ~/ 1000,
     title,
     body,
     const NotificationDetails(
       android: AndroidNotificationDetails(
         'default_channel',
-        'High Importance Notifications',
+        'Thông báo chung',
         importance: Importance.max,
         priority: Priority.high,
       ),
     ),
+    payload: payload,
   );
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-await FirebaseAppCheck.instance.activate(
+
+  await FirebaseAppCheck.instance.activate(
     androidProvider: AndroidProvider.debug,
   );
   await dotenv.load(fileName: ".env");
   await Hive.initFlutter();
-  await Hive.openBox('local_messages');
+  await Hive.openBox(AppLocalMessages.localMessages);
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
@@ -114,8 +168,14 @@ await FirebaseAppCheck.instance.activate(
   FlutterNativeSplash.remove();
   runApp(MultiBlocProvider(
     providers: [
-      BlocProvider(
+      BlocProvider<MessageCubit>(
         create: (_) => MessageCubit(),
+      ),
+      BlocProvider<AIModelCubit>(
+        create: (_) => AIModelCubit(),
+      ),
+      BlocProvider<ConversationCubit>(
+        create: (_) => ConversationCubit(),
       ),
     ],
     child: MultiProvider(
@@ -127,7 +187,7 @@ await FirebaseAppCheck.instance.activate(
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        ChangeNotifierProvider(create: (_) => MessageAIProvider()),
+        ChangeNotifierProvider(create: (_) => AuthUserProvider()),
       ],
       child: const MyApp(),
     ),
@@ -152,18 +212,23 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await FirebaseMessaging.instance.requestPermission();
-      notificationService.checkInitialMessage();
-      Future.microtask(() {
-        initServices();
+
+      FirebaseAuth.instance.authStateChanges().listen((user) {
+        if (user != null) {
+          setupTokenAndFcm();
+          context.read<MessageCubit>().emit(const MessageState());
+        }
       });
     });
+    notificationService.initialize(context);
 
+    notificationService.handleKilledStateMessage();
     _appLinks = AppLinks();
     _appLinks.getInitialLink().then((uri) {
       if (uri != null &&
           uri.scheme == 'phonestore' &&
           uri.host == 'payment-result') {
-        _goCompleteOrder();
+        _goSuccessOrder();
       }
     });
 
@@ -171,16 +236,9 @@ class _MyAppState extends State<MyApp> {
       debugPrint('🔗 Deep link received: $uri');
 
       if (uri.scheme == 'phonestore' && uri.host == 'payment-result') {
-        _goCompleteOrder();
+        _goSuccessOrder();
       }
     });
-  }
-
-  Future<void> initServices() async {
-    await Future.wait([
-      setupTokenAndFcm(),
-      notificationService.initialize(context),
-    ]);
   }
 
   @override
@@ -189,11 +247,11 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  void _goCompleteOrder() {
+  void _goSuccessOrder() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        CompleteOrder.routeName,
+        SuccessOrder.routeName,
         (route) => false,
       );
     });
@@ -202,55 +260,63 @@ class _MyAppState extends State<MyApp> {
   Future<void> setupTokenAndFcm() async {
     final notificationService = NotificationService();
 
-    // Lấy user hiện tại từ Firebase Auth
     final user = AuthHelper.currentUser;
     if (user == null) return;
 
-    // Lấy FCM token
     final token = await notificationService.getDeviceToken();
-    print("Token:$token");
     if (token.isEmpty) return;
 
-    final uid = user.uid;
-    final userRef = Collections.user.doc(uid);
+    final userRef = Collections.user.doc(user.uid);
 
-    // Lấy token hiện tại trong Firestore
-    final snapshot = await userRef.get();
+    try {
+      final snapshot = await userRef.get();
+      List<String> tokens = [];
 
-    List<String> tokens = [];
+      if (snapshot.exists) {
+        final data = snapshot.data();
 
-    if (snapshot.exists &&
-        snapshot.data()![UserApp.userDeviceTokensField] != null) {
-      tokens =
-          List<String>.from(snapshot.data()![UserApp.userDeviceTokensField]);
-    }
-
-    // Nếu token mới chưa có thì thêm vào array
-    if (!tokens.contains(token)) {
-      tokens.add(token);
-
-      await userRef.update({
-        UserApp.userDeviceTokensField: tokens,
-      });
-    }
-
-    // Lắng nghe token refresh
-    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-      final snap = await userRef.get();
-
-      List<String> refreshedTokens = [];
-
-      if (snap.exists && snap.data()![UserApp.userDeviceTokensField] != null) {
-        refreshedTokens =
-            List<String>.from(snap.data()![UserApp.userDeviceTokensField]);
+        if (data != null && data[UserApp.userDeviceTokensField] != null) {
+          tokens = List<String>.from(
+            data[UserApp.userDeviceTokensField],
+          );
+        }
       }
 
-      if (!refreshedTokens.contains(newToken)) {
-        refreshedTokens.add(newToken);
+      if (!tokens.contains(token)) {
+        tokens.add(token);
+      }
 
-        await userRef.update({
-          UserApp.userDeviceTokensField: refreshedTokens,
-        });
+      await userRef.set({
+        UserApp.userDeviceTokensField: tokens,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      print("❌ FIRESTORE ERROR: $e");
+    }
+
+    FirebaseMessaging.instance.onTokenRefresh
+        .distinct()
+        .listen((newToken) async {
+      try {
+        final snap = await userRef.get();
+        List<String> tokens = [];
+
+        final data = snap.data();
+
+        if (data != null && data[UserApp.userDeviceTokensField] != null) {
+          tokens = List<String>.from(
+            data[UserApp.userDeviceTokensField],
+          );
+        }
+
+        if (!tokens.contains(newToken)) {
+          tokens.add(newToken);
+
+          await userRef.set({
+            UserApp.userDeviceTokensField: tokens,
+          }, SetOptions(merge: true));
+        }
+      } catch (e) {
+        print("❌ TOKEN REFRESH ERROR: $e");
       }
     });
   }
@@ -311,50 +377,68 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: MyApp.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          scaffoldBackgroundColor: AppColors.surface,
-          fontFamily: AppFonts.publicSans),
+        scaffoldBackgroundColor: AppColors.surface,
+        fontFamily: AppFonts.publicSans,
+      ),
       builder: (context, child) {
         return OfflineBuilder(
           connectivityBuilder: (context, connectivity, widgetChild) {
             final bool isOnline =
                 !connectivity.contains(ConnectivityResult.none);
 
-            //   return widgetChild;
             return isOnline ? widgetChild : offlineUI();
           },
-          child: child!,
+          child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: child!),
         );
       },
       initialRoute: '/',
       routes: {
         '/': (context) => const AuthGate(),
-        '/login_page': (context) => const LoginPage(),
-        '/homePage': (context) => const HomePage(),
-        '/homeBody': (context) => const HomeBody(),
-        '/policy': (context) => const PolicyHomePage(),
-        '/supportCenter': (context) => const SupportCenterPage(),
+        '/login-page': (context) => const LoginPage(),
+        '/home-screen': (context) => const HomePage(),
+        '/support-center': (context) => const SupportCenterPage(),
         '/account': (context) => const AccountPage(),
-        '/userInfo': (context) => const UserInfoPage(),
-        '/order_info': (context) => const OrderInfoPage(),
-        '/cartPage': (context) => const CartPage(),
+        '/user-info': (context) => const UserInfoPage(),
+        '/cart-screen': (context) => const CartPage(),
         '/search_page': (context) => const SearchPage(),
-        '/completeOrder': (context) => const CompleteOrder(),
-        '/failOrder': (context) => const FailOrder(),
-        '/cancelOrder': (context) => const CancelOrderPage(),
-        '/messagePage': (context) => const MessagePage(),
-        '/chatBoxPage': (context) => const ChatBoxPage(),
-        '/chatAI': (context) => const ChatAI(),
-        '/linkPhone': (context) => const LinkPhonePage(),
+        '/fail-to-order': (context) => const FailOrder(),
+        '/cancel-order': (context) => const CancelOrderPage(),
+        '/gemini-AI': (context) => const ChatAI(),
+        '/success-order': (context) => const SuccessOrder(),
+        '/shipping-info-page': (context) => const ShippingInfoPage(),
+        '/notification-page': (context) => const NotificationPage(),
       },
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case CategoryPage.routeName:
             final args = settings.arguments as CategoryPage;
 
-            return MaterialPageRoute(
+            return MaterialPageRoute(  
               builder: (context) => CategoryPage(
                 categoryId: args.categoryId,
                 categoryName: args.categoryName,
+              ),
+            );
+
+          case MessagePage.routeName:
+            final args = settings.arguments as MessagePage?;
+
+            return MaterialPageRoute(
+              builder: (context) => MessagePage(
+                product: args?.product,
+                productMessage: args?.productMessage,
+              ),
+            );
+          case CompleteProfilePage.routeName:
+            final args = settings.arguments as CompleteProfilePage;
+
+            return MaterialPageRoute(
+              builder: (context) => CompleteProfilePage(
+                userId: args.userId,
+                userAccount: args.userAccount,
               ),
             );
           case DetailOrder.routeName:
@@ -365,40 +449,24 @@ class _MyAppState extends State<MyApp> {
                 orderId: args.orderId,
               ),
             );
-          case OtpChangeEmailPage.routeName:
-            final args = settings.arguments as OtpChangeEmailPage;
+          case CheckoutOrder.routeName:
+            final args = settings.arguments as CheckoutOrder;
 
             return MaterialPageRoute(
-              builder: (context) => OtpChangeEmailPage(
-                newEmail: args.newEmail,
-                password: args.password,
-              ),
-            );
-          case OtpResetPassPage.routeName:
-            final args = settings.arguments as OtpResetPassPage;
-
-            return MaterialPageRoute(
-              builder: (context) => OtpResetPassPage(
-                email: args.email,
-              ),
-            );
-          case BuyItem.routeName:
-            final args = settings.arguments as BuyItem;
-
-            return MaterialPageRoute(
-              builder: (context) => BuyItem(
+              builder: (context) => CheckoutOrder(
                 orderProduct: args.orderProduct,
                 totalPrice: args.totalPrice,
               ),
             );
           case ChangeOrderInfo.routeName:
-            final args = settings.arguments as ChangeOrderInfo;
+            final args = settings.arguments as ChangeOrderInfo?;
 
             return MaterialPageRoute(
               builder: (context) => ChangeOrderInfo(
-                userPhone: args.userPhone,
-                userName: args.userName,
-                userAddress: args.userAddress,
+                id: args?.id,
+                userPhone: args?.userPhone,
+                userName: args?.userName,
+                userAddress: args?.userAddress,
               ),
             );
           case PhoneProfilePage.routeName:
@@ -409,28 +477,12 @@ class _MyAppState extends State<MyApp> {
                 id: args.id,
               ),
             );
-          case ChangepassPage.routeName:
-            final args = settings.arguments as ChangepassPage;
+
+          case FeedbackScreen.routeName:
+            final args = settings.arguments as FeedbackScreen;
 
             return MaterialPageRoute(
-              builder: (context) => ChangepassPage(
-                email: args.email,
-              ),
-            );
-          case EnterNewEmail.routeName:
-            final args = settings.arguments as EnterNewEmail;
-
-            return MaterialPageRoute(
-              builder: (context) => EnterNewEmail(
-                email: args.email,
-                pass: args.pass,
-              ),
-            );
-          case FeedBackPage.routeName:
-            final args = settings.arguments as FeedBackPage;
-
-            return MaterialPageRoute(
-              builder: (context) => FeedBackPage(
+              builder: (context) => FeedbackScreen(
                 orderId: args.orderId,
               ),
             );

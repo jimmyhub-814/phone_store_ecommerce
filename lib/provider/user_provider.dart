@@ -3,66 +3,29 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
+import 'package:phone_store/main.dart';
 import 'package:phone_store/models/user.dart';
 
 class UserProvider extends ChangeNotifier {
   UserApp? _user;
   UserApp? get user => _user;
-
-  /// Lấy userId từ Supabase mỗi lần cần
   String? get userId => AuthHelper.userId;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
-  Future<void> setupTokenAndFcm() async {
-    final user = AuthHelper.currentUser;
-    if (user == null) return;
-
-    final fcm = FirebaseMessaging.instance;
-    final token = await fcm.getToken();
-    if (token == null) return;
-
-    final userRef = Collections.user.doc(user.uid);
-
-    // Lấy dữ liệu user hiện tại
-    final snapshot = await userRef.get();
-
-    List<String> userDeviceTokens = [];
-
-    if (snapshot.exists &&
-        snapshot.data()![UserApp.userDeviceTokensField] != null) {
-      userDeviceTokens =
-          List<String>.from(snapshot.data()![UserApp.userDeviceTokensField]);
-    }
-
-    // Thêm token mới nếu chưa có
-    if (!userDeviceTokens.contains(token)) {
-      userDeviceTokens.add(token);
-      await userRef.update({UserApp.userDeviceTokensField: userDeviceTokens});
-    }
-
-    // Lắng nghe token refresh
-    fcm.onTokenRefresh.listen((newToken) async {
-      final snap = await userRef.get();
-
-      List<String> refreshedTokens = [];
-      if (snap.exists && snap.data()![UserApp.userDeviceTokensField] != null) {
-        refreshedTokens =
-            List<String>.from(snap.data()![UserApp.userDeviceTokensField]);
-      }
-
-      if (!refreshedTokens.contains(newToken)) {
-        refreshedTokens.add(newToken);
-        await userRef.update({UserApp.userDeviceTokensField: refreshedTokens});
-      }
-    });
+  UserProvider() {
+    getUserInfo();
   }
 
-  // ---------------------------------------------
-  // Lấy thông tin user từ bảng 'users'
-  // ---------------------------------------------
+  void updateLocalUser(UserApp user) {
+    _user = user;
+    notifyListeners();
+  }
+
   Future<UserApp?> getUserInfo() async {
     try {
       if (userId == null) return null;
-
+      _isLoading = true;
       final doc = await Collections.user.doc(userId!).get();
 
       if (!doc.exists || doc.data() == null) {
@@ -72,7 +35,7 @@ class UserProvider extends ChangeNotifier {
       _user = UserApp.fromMap(doc.data()!);
 
       notifyListeners();
-
+      _isLoading = false;
       return _user;
     } catch (e) {
       debugPrint("User parse error: $e");
@@ -80,9 +43,119 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // ---------------------------------------------
-  // Đăng xuất Firebase
-  // ---------------------------------------------
+  Future<void> setDefaultShippingInfo(String id) async {
+    if (_user == null) return;
+
+    final currentList = List<ShippingInfo>.from(_user!.shippingInfo);
+
+    currentList.sort((a, b) {
+      if (a.id == id) return -1;
+      if (b.id == id) return 1;
+      return 0;
+    });
+
+    _user = _user!.copyWith(shippingInfo: currentList);
+    notifyListeners();
+
+    try {
+      await Collections.user.doc(_user!.id).update({
+        'shippingInfo': currentList.map((e) => e.toMap()).toList(),
+      });
+    } catch (e) {
+      print('❌ setDefaultShippingInfo error: $e');
+    }
+  }
+
+  Future<void> saveShippingInfo(
+      BuildContext context, ShippingInfo shippingInfo) async {
+    if (shippingInfo.fullName.isEmpty ||
+        shippingInfo.phone.isEmpty ||
+        shippingInfo.address.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vui lòng điền đầy đủ thông tin'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final docRef = Collections.user.doc(AuthHelper.userId);
+
+      final doc = await docRef.get();
+
+      List<dynamic> shippingList =
+          List.from(doc.data()?[UserApp.shippingInfoField] ?? []);
+
+      if (shippingInfo.id.isEmpty) {
+        shippingList.add(shippingInfo.toMap());
+      } else {
+        final index = shippingList.indexWhere(
+          (item) => item['id'] == shippingInfo.id,
+        );
+
+        final updatedShipping = ShippingInfo(
+          id: shippingInfo.id,
+          fullName: shippingInfo.fullName,
+          phone: shippingInfo.phone,
+          address: shippingInfo.address,
+        );
+
+        if (index != -1) {
+          shippingList[index] = updatedShipping.toMap();
+        } else {
+          shippingList.add(updatedShipping.toMap());
+        }
+      }
+
+      await docRef.update({
+        UserApp.shippingInfoField: shippingList,
+      });
+      await getUserInfo();
+      notifyListeners();
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            shippingInfo.id.isEmpty
+                ? 'Thêm địa chỉ thành công'
+                : 'Cập nhật địa chỉ thành công',
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Có lỗi xảy ra: $e'),
+        ),
+      );
+    }
+  }
+
+  Future<void> deleteShippingInfo(String id) async {
+    final docRef = Collections.user.doc(AuthHelper.userId);
+
+    final doc = await docRef.get();
+
+    List<dynamic> shippingList =
+        List.from(doc.data()?[UserApp.shippingInfoField] ?? []);
+
+    shippingList.removeWhere(
+      (e) => e['id'] == id,
+    );
+
+    await docRef.update({
+      UserApp.shippingInfoField: shippingList,
+    });
+
+    await getUserInfo();
+
+    notifyListeners();
+  }
+
   Future<void> signOut() async {
     final user = AuthHelper.currentUser;
     if (user == null) return;
@@ -104,5 +177,12 @@ class UserProvider extends ChangeNotifier {
     }
 
     await FirebaseAuth.instance.signOut();
+    _user = null;
+
+    notifyListeners();
+    MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      '/',
+      (route) => false,
+    );
   }
 }
