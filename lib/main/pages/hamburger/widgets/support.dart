@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/policy_page.dart';
-import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart'; 
+import 'package:phone_store/app_constants/app_utils.dart';
 
 class SupportCenterPage extends StatelessWidget {
   const SupportCenterPage({super.key});
 
   static const routeName = "/support-center";
-
-  Future<void> _openLink(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,21 +47,21 @@ class SupportCenterPage extends StatelessWidget {
             title: "Hotline hỗ trợ",
             subtitle: "Gọi ngay để được hỗ trợ trực tiếp",
             color: Colors.redAccent,
-            onTap: () => _openLink("tel:0852711187"),
+            onTap: () => AppUtils.openLink("tel:0852711187"),
           ),
           _supportItem(
             icon: Icons.perm_phone_msg_sharp,
             title: "Hỗ trợ qua Zalo",
             subtitle: "Trò chuyện nhanh chóng & tiện lợi",
             color: Colors.blueAccent,
-            onTap: () => _openLink("https://zalo.me/0852711187"),
+            onTap: () => AppUtils.openLink("https://zalo.me/0852711187"),
           ),
           _supportItem(
             icon: Icons.email_rounded,
             title: "Email hỗ trợ",
             subtitle: "Gửi phản hồi hoặc báo lỗi",
             color: Colors.orange,
-            onTap: () => _openLink("mailto:support@dmcompany.com"),
+            onTap: () => AppUtils.openLink("mailto:support@dmcompany.com"),
           ),
           SizedBox(
             height: 20,

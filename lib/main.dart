@@ -101,10 +101,10 @@ import 'package:phone_store/main/pages/order/shipping_info_page.dart';
 // ===============================
 // HAMBURGER MENU / USER FEATURES
 // ===============================
-import 'package:phone_store/main/pages/hamburger/account.dart';
-import 'package:phone_store/main/pages/hamburger/support.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/account.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/support.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/chat_with_AI.dart';
-import 'package:phone_store/main/pages/hamburger/widgets/chat_with_seller.dart';
+import 'package:phone_store/main/pages/mainPage/chat_with_seller.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/feedback.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/order_status.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/user_info.dart';

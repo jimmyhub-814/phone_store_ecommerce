@@ -7,7 +7,6 @@ import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/main/auth/show_otp_dialog.dart';
 import 'dart:async';
-
 import 'package:phone_store/models/user.dart';
 
 class AuthUserProvider extends ChangeNotifier {

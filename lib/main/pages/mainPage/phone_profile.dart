@@ -5,7 +5,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
-import 'package:phone_store/main/pages/hamburger/widgets/chat_with_seller.dart';
+import 'package:phone_store/main/pages/mainPage/chat_with_seller.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/main/pages/shared_widgets/custom_card.dart';
 import 'package:phone_store/models/feedback.dart';

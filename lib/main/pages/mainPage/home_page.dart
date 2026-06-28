@@ -6,7 +6,7 @@ import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/cubit/conversation_cubit.dart';
 import 'package:phone_store/main/pages/hamburger/hamburger_menu.dart';
-import 'package:phone_store/main/pages/hamburger/widgets/chat_with_seller.dart';
+import 'package:phone_store/main/pages/mainPage/chat_with_seller.dart';
 import 'package:phone_store/main/pages/mainPage/best_seller_item.dart';
 import 'package:phone_store/main/pages/mainPage/big_carousel.dart';
 import 'package:phone_store/main/pages/mainPage/cart_page.dart';
@@ -140,9 +140,9 @@ class _HomePageState extends State<HomePage> {
                             onTap: () {
                               Navigator.pushNamed(context, CartPage.routeName);
                             },
-                            child: const Icon(
+                            child: Icon(
                               Icons.shopping_cart_outlined,
-                              color: AppColors.surface,
+                              color: AppColors.surface.withValues(alpha: 0.8),
                               size: 22,
                             ),
                           ),
@@ -170,9 +170,10 @@ class _HomePageState extends State<HomePage> {
                                 return Stack(
                                   clipBehavior: Clip.none,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.chat_bubble_rounded,
-                                      color: AppColors.surface,
+                                      color: AppColors.surface
+                                          .withValues(alpha: 0.8),
                                       size: 22,
                                     ),
                                     if (state.unreadCount > 0)

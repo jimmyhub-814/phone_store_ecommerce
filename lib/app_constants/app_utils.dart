@@ -3,6 +3,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppUtils {
   const AppUtils._();
@@ -89,7 +90,7 @@ class AppUtils {
         ),
       ),
     );
-    return gender; 
+    return gender;
   }
 
   static Widget _genderOption(BuildContext context, String gender) {
@@ -176,6 +177,15 @@ class AppUtils {
       'too-many-requests' => 'Thử lại sau vài phút',
       _ => 'Đã có lỗi xảy ra',
     };
+  }
+
+  static Future<void> openLink(String url) async {
+    final uri = Uri.parse(url);
+
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
   }
 
   static Future<String?> chooseImage(

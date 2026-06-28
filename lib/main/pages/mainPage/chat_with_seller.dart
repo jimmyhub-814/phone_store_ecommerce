@@ -12,13 +12,13 @@ import 'package:phone_store/main/pages/order/checkout_order.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/models/message_model.dart';
 import 'package:phone_store/models/order.dart';
-import 'package:phone_store/models/products.dart'; 
+import 'package:phone_store/models/products.dart';
 import 'package:phone_store/main/pages/mainPage/phone_profile.dart';
 import 'package:phone_store/models/variants.dart';
 import 'package:phone_store/provider/cart_provider.dart';
-import 'package:phone_store/provider/product_provider.dart'; 
+import 'package:phone_store/provider/product_provider.dart';
 import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:phone_store/app_constants/app_utils.dart';
 
 class MessagePage extends StatefulWidget {
   final Product? product;
@@ -43,9 +43,8 @@ class _MessagePageState extends State<MessagePage> {
 
   @override
   void initState() {
-   
     super.initState();
- _messageSub?.cancel();
+    _messageSub?.cancel();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initialize();
@@ -57,7 +56,7 @@ class _MessagePageState extends State<MessagePage> {
 
   Future<void> _initialize() async {
     final messageCubit = context.read<MessageCubit>();
-   // messageCubit.state.messages.clear();
+
     await messageCubit.init();
 
     await messageCubit.initMessages();
@@ -353,7 +352,8 @@ class _MessagePageState extends State<MessagePage> {
                                 : null,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                           child: Text(
                             mode == 'cart' ? 'Thêm vào giỏ' : 'Mua ngay',
@@ -424,15 +424,6 @@ class _MessagePageState extends State<MessagePage> {
     }
   }
 
-  Future<void> _openLink(String url) async {
-    final uri = Uri.parse(url);
-
-    await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<MessageCubit>();
@@ -444,7 +435,7 @@ class _MessagePageState extends State<MessagePage> {
         elevation: 0,
         backgroundColor: const Color(0xFF1A1A2E),
         leadingWidth: 56,
-        leading: AppbarIcon(),
+        leading: AppbarIcon(color: AppColors.surfaceSecondary),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -468,11 +459,11 @@ class _MessagePageState extends State<MessagePage> {
           IconButton(
             icon: const Icon(
               Icons.phone_rounded,
-              color: Colors.white70,
+              color: AppColors.surfaceSecondary,
               size: 20,
             ),
             onPressed: () {
-              _openLink('tel:0852711187');
+              AppUtils.openLink('tel:0852711187');
             },
           )
         ],
@@ -806,14 +797,12 @@ class _MessagePageState extends State<MessagePage> {
                               ],
                             ),
                           ),
-
-                          // ── Divider ─────────────────────────────────────────────
+ 
                           Container(
                             height: 1,
                             color: Colors.white.withValues(alpha: 0.06),
                           ),
-
-                          // ── Action buttons ──────────────────────────────────────
+ 
                           ClipRRect(
                             borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(16),
@@ -821,8 +810,7 @@ class _MessagePageState extends State<MessagePage> {
                             ),
                             child: IntrinsicHeight(
                               child: Row(
-                                children: [
-                                  // Thêm giỏ
+                                children: [ 
                                   Expanded(
                                     child: InkWell(
                                       onTap: () => _showVariantSheet(

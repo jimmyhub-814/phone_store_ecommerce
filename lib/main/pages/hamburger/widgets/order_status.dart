@@ -768,8 +768,9 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
                                               const SnackBar(
-                                                  content: Text(
-                                                      'Hủy đơn thất bại, thử lại!')),
+                                                content: Text(
+                                                    'Hủy đơn thất bại, thử lại!'),
+                                              ),
                                             );
                                           }
                                         }
@@ -778,7 +779,9 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                             ],
                           )
                         else if (order.orderInfo.orderStatus ==
-                            OrderStatus.shipping.name)
+                                OrderStatus.confirmed.name ||
+                            order.orderInfo.orderStatus ==
+                                OrderStatus.shipping.name)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -816,8 +819,11 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                                       OrderStatus.reviewed.name
                                   ? _actionButton(
                                       text: "Mua lại",
-                                      color: AppColors.accent,
-                                      textColor: AppColors.dangerLight,
+                                      color: AppColors.surfaceLight,
+                                      textColor:
+                                          _cancellingOrders.contains(order.id)
+                                              ? Colors.grey
+                                              : Colors.black87,
                                       onPressed: () async {
                                         bool status = false;
                                         for (var i in order.orderProduct) {
@@ -857,8 +863,9 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   const SnackBar(
-                                                      content: Text(
-                                                          'Hủy đơn thất bại, thử lại!')),
+                                                    content: Text(
+                                                        'Hủy đơn thất bại, thử lại!'),
+                                                  ),
                                                 );
                                               }
                                             },
@@ -875,8 +882,10 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                             children: [
                               _actionButton(
                                 text: "Mua lại",
-                                color: AppColors.accent,
-                                textColor: AppColors.dangerLight,
+                                color: AppColors.surfaceLight,
+                                textColor: _cancellingOrders.contains(order.id)
+                                    ? Colors.grey
+                                    : Colors.black87,
                                 onPressed: () async {
                                   bool status = false;
                                   for (var i in order.orderProduct) {

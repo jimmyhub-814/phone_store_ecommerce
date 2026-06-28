@@ -5,7 +5,6 @@ import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/cubit/gemini_ai_cubit.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
-
 import 'package:phone_store/models/AI.dart';
 
 class ChatAI extends StatefulWidget {
@@ -19,76 +18,70 @@ class ChatAI extends StatefulWidget {
 class _ChatAIState extends State<ChatAI> {
   final userId = AuthHelper.userId;
   final chatController = TextEditingController();
-  List<AIModel> messageList = [];
-  bool _showScrollToBottom = false;
   final ScrollController _scrollController = ScrollController();
+  bool _showScrollToBottom = false;
+  late AIModelCubit _cubit;
 
   void scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    if (!mounted) return;
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   void _onScroll() {
-    final show =
-        context.read<AIModelCubit>().state.scrollController.offset > 200;
+    if (!mounted) return;
+    final show = _scrollController.offset > 200;
     if (show != _showScrollToBottom) {
       setState(() => _showScrollToBottom = show);
     }
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    messageList.clear();
-  }
-
-  @override
   void initState() {
     super.initState();
-    final cubit = context.read<AIModelCubit>();
-    cubit.state.scrollController.addListener(_onScroll);
+    _cubit = context.read<AIModelCubit>();
+    _cubit.onShouldScrollToBottom = scrollToBottom;
+    _scrollController.addListener(_onScroll);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (cubit.state.messageList.isEmpty) {
-        final messages = List<AIModel>.from(cubit.state.messageList);
-
-        messages.add(
-          AIModel(
-            id: "init",
-            message:
-                "Chào mừng bạn đến với DM Store!👋\nBạn đang quan tâm đến sản phẩm nào của shop ạ?",
-            isUser: false,
-            time: DateTime.now().millisecondsSinceEpoch,
-          ),
-        );
-
-        cubit.emit(
-          cubit.state.copyWith(
-            messageList: messages,
+      if (_cubit.state.messageList.isEmpty) {
+        _cubit.emit(
+          _cubit.state.copyWith(
+            messageList: [
+              AIModel(
+                id: "init",
+                message:
+                    "Chào mừng bạn đến với DM Store!👋\nBạn đang quan tâm đến sản phẩm nào của shop ạ?",
+                isUser: false,
+                time: DateTime.now().millisecondsSinceEpoch,
+              ),
+            ],
           ),
         );
       }
+      scrollToBottom();
     });
-    scrollToBottom();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    chatController.dispose();
+    _cubit.onShouldScrollToBottom = null;
+    _cubit.clearMessages();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<AIModelCubit>();
-    final ScrollController scrollController = cubit.state.scrollController;
     return BlocBuilder<AIModelCubit, GeminiAIState>(
       builder: (context, state) {
-        messageList = state.messageList;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          scrollToBottom();
-        });
-
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: AppColors.surfaceLight,
@@ -96,8 +89,8 @@ class _ChatAIState extends State<ChatAI> {
             elevation: 0,
             backgroundColor: const Color(0xFF1A1A2E),
             leadingWidth: 56,
-            surfaceTintColor: AppColors.surface,
-            leading: AppbarIcon(),
+            leading: AppbarIcon(color: AppColors.surfaceSecondary),
+            centerTitle: true,
             title: const Text(
               'DM Store AI',
               style: TextStyle(
@@ -118,15 +111,13 @@ class _ChatAIState extends State<ChatAI> {
             child: Stack(
               children: [
                 ListView.builder(
-                  controller: scrollController,
+                  controller: _scrollController,
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 10, top: 30),
-                  itemCount: messageList.length,
+                  itemCount: state.messageList.length,
                   itemBuilder: (context, index) {
-                    final msg = messageList[index];
-
-                    return _chatWidget(context, msg,
-                        onDone: !msg.isUser ? () {} : null);
+                    final msg = state.messageList[index];
+                    return _chatWidget(context, msg);
                   },
                 ),
                 AnimatedPositioned(
@@ -212,7 +203,9 @@ class _ChatAIState extends State<ChatAI> {
                               color: Colors.white, fontSize: 15),
                           decoration: const InputDecoration(
                             hintText: 'Nhập tin nhắn...',
-                            hintStyle: TextStyle(color: Color(0xFF444455)),
+                            hintStyle: TextStyle(
+                              color: Color(0xFF444455),
+                            ),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(vertical: 11),
                           ),
@@ -223,31 +216,20 @@ class _ChatAIState extends State<ChatAI> {
                     ValueListenableBuilder(
                       valueListenable: chatController,
                       builder: (_, value, child) {
-                        String chatText = chatController.text;
+                        final chatText = chatController.text;
                         final isEmpty = value.text.trim().isEmpty;
+
                         return state.isTyping
                             ? AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
                                 width: 44,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: isEmpty ? Colors.red : null,
+                                  color: Colors.red,
                                   borderRadius: BorderRadius.circular(14),
-                                  boxShadow: isEmpty
-                                      ? []
-                                      : [
-                                          BoxShadow(
-                                            color: const Color(0xFF6C63FF)
-                                                .withValues(alpha: 0.4),
-                                            blurRadius: 10,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ],
                                 ),
                                 child: IconButton(
-                                  onPressed: () {
-                                    cubit.stopResponse();
-                                  },
+                                  onPressed: () => _cubit.stopResponse(),
                                   icon: const Icon(
                                     Icons.stop,
                                     color: AppColors.surface,
@@ -265,7 +247,7 @@ class _ChatAIState extends State<ChatAI> {
                                       : const LinearGradient(
                                           colors: [
                                             Color(0xFF6C63FF),
-                                            Color(0xFF8B5CF6)
+                                            Color(0xFF8B5CF6),
                                           ],
                                         ),
                                   color:
@@ -295,7 +277,7 @@ class _ChatAIState extends State<ChatAI> {
                                       : () async {
                                           FocusScope.of(context).unfocus();
                                           chatController.clear();
-                                          await cubit.sendMessage(
+                                          await _cubit.sendMessage(
                                               message: chatText);
                                         },
                                 ),
@@ -312,8 +294,7 @@ class _ChatAIState extends State<ChatAI> {
     );
   }
 
-  Widget _chatWidget(BuildContext context, AIModel msg,
-      {VoidCallback? onDone}) {
+  Widget _chatWidget(BuildContext context, AIModel msg) {
     final isMe = msg.isUser == true;
 
     return Align(
@@ -322,63 +303,35 @@ class _ChatAIState extends State<ChatAI> {
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.85,
         ),
-        child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.only(
-                top: 3,
-                bottom: 3,
-                left: isMe ? 50 : 8,
-                right: isMe ? 8 : 50,
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-              decoration: BoxDecoration(
-                color: isMe ? AppColors.surface : AppColors.primaryDark,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(12),
-                  topRight: const Radius.circular(12),
-                  bottomLeft: Radius.circular(isMe ? 12 : 4),
-                  bottomRight: Radius.circular(isMe ? 4 : 12),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (msg.isLoading)
-                    LoadingAnimationWidget.waveDots(
-                      color: AppColors.surface,
-                      size: 15,
-                    )
-                  else if (msg.isStreaming)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            msg.message,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: AppColors.surface,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    Text(
-                      msg.message,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color:
-                            isMe ? AppColors.textSecondary : AppColors.surface,
-                      ),
-                    ),
-                ],
-              ),
+        child: Container(
+          margin: EdgeInsets.only(
+            top: 3,
+            bottom: 3,
+            left: isMe ? 50 : 8,
+            right: isMe ? 8 : 50,
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+          decoration: BoxDecoration(
+            color: isMe ? AppColors.surface : AppColors.primaryDark,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(12),
+              topRight: const Radius.circular(12),
+              bottomLeft: Radius.circular(isMe ? 12 : 4),
+              bottomRight: Radius.circular(isMe ? 4 : 12),
             ),
-          ],
+          ),
+          child: msg.isLoading
+              ? LoadingAnimationWidget.waveDots(
+                  color: AppColors.surface,
+                  size: 15,
+                )
+              : Text(
+                  msg.message,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: isMe ? AppColors.textSecondary : AppColors.surface,
+                  ),
+                ),
         ),
       ),
     );

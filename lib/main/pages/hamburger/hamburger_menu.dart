@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/main/auth/logout.dart';
-import 'package:phone_store/main/pages/hamburger/account.dart';
-import 'package:phone_store/main/pages/hamburger/support.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/account.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/support.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/chat_with_AI.dart';
 import 'package:phone_store/main/pages/notification/notification.dart';
 
