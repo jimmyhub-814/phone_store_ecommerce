@@ -25,7 +25,7 @@ A full-featured Vietnamese e-commerce mobile application for purchasing smartpho
 ## ✨ Features
 
 ### 🛍️ User App (DM Store)
-- **Authentication** — Email/Password, Google Sign-In, Phone OTP (Firebase Auth)
+- **Authentication** — Google Sign-In, Phone OTP (Firebase Auth)
 - **Product Browsing** — Search, filter, view history, product detail pages
 - **Smart Recommendations** — Collaborative filtering based on order history, cart, view & search behavior (weighted scoring)
 - **Shopping Cart** — Real-time sync with Firestore, atomic batch deletes on purchase
