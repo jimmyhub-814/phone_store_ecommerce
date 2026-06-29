@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/app_constants/app_utils.dart';
@@ -415,7 +416,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
                     builder: (context, edit, _) {
                       return GestureDetector(
                         onTap: edit
-                            ? () => AppUtils.chooseImage(context, picker)
+                            ? () async {
+                                final image =
+                                    await AppUtils.chooseImage(context, picker);
+                                if (image != null) {
+                                  setState(() => _pickedImage = image);
+                                }
+                              }
                             : null,
                         child: Stack(
                           children: [
@@ -564,9 +571,23 @@ class _UserInfoPageState extends State<UserInfoPage> {
               onPressed: () async {
                 Navigator.pop(dialogContext);
                 isEditMode.value = false;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => Center(
+                    child: Center(
+                      child: LoadingAnimationWidget.waveDots(
+                        color: AppColors.primary,
+                        size: 60,
+                      ),
+                    ),
+                  ),
+                );
+
                 try {
                   await updateInfo(user);
                   if (!mounted) return;
+                  Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: const Row(
@@ -585,7 +606,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   );
                 } catch (e) {
                   if (!mounted) return;
-
+                  Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('$e'),
