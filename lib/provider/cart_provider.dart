@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
@@ -9,8 +10,8 @@ import 'package:phone_store/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
 class CartProvider extends ChangeNotifier {
-  final user = AuthHelper.userId;
   StreamSubscription? _cartSub;
+  StreamSubscription<User?>? _authSub;
   List<Cart> _cart = [];
   List<Cart> get cart => [..._cart];
 
@@ -22,53 +23,50 @@ class CartProvider extends ChangeNotifier {
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  CartProvider() {
-    listenCart();
-  }
-
   void listenCart() {
-    debugPrint("🔥 listenCart CALLED");
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    debugPrint("🔍 listenCart userId = $userId");
+
+    if (userId == null) {
+      debugPrint("❌ listenCart ABORT: userId null");
+      return;
+    }
 
     _cartSub?.cancel();
+    _isLoading = true;
+    notifyListeners();
 
-    try {
-      _cartSub = Collections.cart(user!).snapshots().listen(
-        (snapshot) {
-          debugPrint("📦 CART UPDATE: ${snapshot.docs.length}");
+    _cartSub = Collections.cart(userId).snapshots().listen(
+      (snapshot) {
+        debugPrint("📦 CART UPDATE: ${snapshot.docs.length}");
 
-          final List<Cart> temp = [];
-
-          for (final doc in snapshot.docs) {
-            final data = doc.data();
-
-            if (data[Cart.productIdField] == null ||
-                data[Cart.variantsIdField] == null) {
-              debugPrint("❌ SKIP INVALID CART: ${doc.id}");
-              continue;
-            }
-
-            temp.add(Cart.fromMap(data));
+        final List<Cart> temp = [];
+        for (final doc in snapshot.docs) {
+          final data = doc.data();
+          if (data[Cart.productIdField] == null ||
+              data[Cart.variantsIdField] == null) {
+            debugPrint("❌ SKIP INVALID CART: ${doc.id}");
+            continue;
           }
+          temp.add(Cart.fromMap(data));
+        }
 
-          _cart = temp;
-
-          _isLoading = false;
-          notifyListeners();
-        },
-        onError: (error) {
-          debugPrint("❌ CART STREAM ERROR: $error");
-          _isLoading = false;
-          notifyListeners();
-        },
-      );
-    } catch (e) {
-      debugPrint("❌ STREAM ERROR: $e");
-    }
+        _cart = temp;
+        _isLoading = false;
+        notifyListeners();
+      },
+      onError: (error) {
+        debugPrint("❌ CART STREAM ERROR: $error");
+        _isLoading = false;
+        notifyListeners();
+      },
+    );
   }
 
   @override
   void dispose() {
     _cartSub?.cancel();
+    _authSub?.cancel();
     super.dispose();
   }
 
@@ -76,7 +74,7 @@ class CartProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final snapshot = await Collections.cart(user!).get();
+    final snapshot = await Collections.cart(AuthHelper.userId!).get();
 
     _cart = snapshot.docs.map((doc) {
       return Cart.fromMap(doc.data());
@@ -90,7 +88,7 @@ class CartProvider extends ChangeNotifier {
       String productId, int quantity, String variantsId) async {
     final docId = "$productId-$variantsId";
 
-    final docRef = Collections.cart(user!).doc(docId);
+    final docRef = Collections.cart(AuthHelper.userId!).doc(docId);
 
     final doc = await docRef.get();
 
@@ -109,17 +107,17 @@ class CartProvider extends ChangeNotifier {
   }
 
   Future<void> increase(String id) async {
-    await Collections.cart(user!).doc(id).update({
+    await Collections.cart(AuthHelper.userId!).doc(id).update({
       Cart.quantityField: FieldValue.increment(1),
     });
   }
 
   Future<void> removeFromCart(String id) async {
-    await Collections.cart(user!).doc(id).delete();
+    await Collections.cart(AuthHelper.userId!).doc(id).delete();
   }
 
   Future<void> decrease(String id) async {
-    final docRef = Collections.cart(user!).doc(id);
+    final docRef = Collections.cart(AuthHelper.userId!).doc(id);
 
     final doc = await docRef.get();
 
@@ -138,7 +136,7 @@ class CartProvider extends ChangeNotifier {
 
     final batch = firestore.batch();
     for (var key in selectedKeys) {
-      batch.delete(Collections.cart(user!).doc(key));
+      batch.delete(Collections.cart(AuthHelper.userId!).doc(key));
     }
     await batch.commit();
   }
@@ -148,7 +146,7 @@ class CartProvider extends ChangeNotifier {
 
     final batch = firestore.batch();
     for (final id in buyItems) {
-      batch.delete(Collections.cart(user!).doc(id));
+      batch.delete(Collections.cart(AuthHelper.userId!).doc(id));
     }
     await batch.commit();
   }
@@ -185,5 +183,9 @@ class CartProvider extends ChangeNotifier {
     }
 
     return total.roundToDouble();
+  }
+
+  void clearSelection() {
+    _selectedItems.clear();
   }
 }

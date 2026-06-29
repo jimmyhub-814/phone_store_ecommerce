@@ -709,8 +709,6 @@ class _MessagePageState extends State<MessagePage> {
 
   Widget _chatWidget(BuildContext context, Message msg) {
     final isMe = msg.senderId == userId;
-    print(userId);
-    print(msg.senderId);
     final dt = DateTime.fromMillisecondsSinceEpoch(msg.time);
     final timeText =
         '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';

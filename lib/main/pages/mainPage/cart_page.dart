@@ -27,6 +27,20 @@ class _CartPageState extends State<CartPage> {
 
   final Map<String, Future<Product?>> _productFutures = {};
 
+  CartProvider? _cartProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _cartProvider = context.read<CartProvider>();
+  }
+
+  @override
+  void dispose() {
+    _cartProvider?.clearSelection();
+    super.dispose();
+  }
+
   Future<Product?> _getCachedProduct(BuildContext context, String productId) {
     return _productFutures.putIfAbsent(
       productId,
@@ -77,6 +91,7 @@ class _CartPageState extends State<CartPage> {
     return Consumer<CartProvider>(
       builder: (context, provider, child) {
         final cart = provider.cart;
+
         return Scaffold(
           backgroundColor: AppColors.surface,
           appBar: PreferredSize(
@@ -432,7 +447,8 @@ class _CartPageState extends State<CartPage> {
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          8),
+                                                                8,
+                                                              ),
                                                               child: Container(
                                                                 width: 25,
                                                                 height: 25,

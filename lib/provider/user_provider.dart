@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +15,25 @@ class UserProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  StreamSubscription<User?>? _authSubscription;  
+  
   UserProvider() {
-    getUserInfo();
+    _authSubscription =
+        FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+      if (firebaseUser != null) {
+        getUserInfo(); 
+      } else {
+        _user = null;
+        _isLoading = false;
+        notifyListeners();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   void updateLocalUser(UserApp user) {
@@ -23,22 +42,36 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<UserApp?> getUserInfo() async {
+    debugPrint("===== getUserInfo =====");
+    if (userId == null) {
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    }
+
+    _isLoading = true;
+    notifyListeners();
+
     try {
-      if (userId == null) return null;
-      _isLoading = true;
       final doc = await Collections.user.doc(userId!).get();
 
       if (!doc.exists || doc.data() == null) {
+        _isLoading = false;
+        notifyListeners();
         return null;
       }
 
       _user = UserApp.fromMap(doc.data()!);
 
-      notifyListeners();
       _isLoading = false;
+      notifyListeners();
+
       return _user;
     } catch (e) {
-      debugPrint("User parse error: $e");
+      _isLoading = false;
+      notifyListeners();
+
+      debugPrint(e.toString());
       return null;
     }
   }

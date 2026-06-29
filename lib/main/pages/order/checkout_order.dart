@@ -216,6 +216,7 @@ class _CheckoutOrderState extends State<CheckoutOrder> {
       ),
       body: Consumer<UserProvider>(builder: (context, provider, child) {
         final user = provider.user;
+        
         if (provider.isLoading || user == null) {
           return Center(
             child: LoadingAnimationWidget.waveDots(

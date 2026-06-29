@@ -216,6 +216,7 @@ class _MyAppState extends State<MyApp> {
       FirebaseAuth.instance.authStateChanges().listen((user) {
         if (user != null) {
           setupTokenAndFcm();
+          context.read<CartProvider>().listenCart();
           context.read<MessageCubit>().emit(const MessageState());
         }
       });
@@ -416,7 +417,7 @@ class _MyAppState extends State<MyApp> {
           case CategoryPage.routeName:
             final args = settings.arguments as CategoryPage;
 
-            return MaterialPageRoute(  
+            return MaterialPageRoute(
               builder: (context) => CategoryPage(
                 categoryId: args.categoryId,
                 categoryName: args.categoryName,

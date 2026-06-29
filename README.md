@@ -23,6 +23,10 @@ Search Screen
 
 
 Chat With Seller Screen
+<<<<<<< HEAD
+=======
+
+>>>>>>> ee0178e (fix user_provider cart_provide and message_cubit, update README)
 <img width="180" height="400" alt="Image" src="https://github.com/user-attachments/assets/78d25a92-ad04-4ba3-9f21-0667d7890c18" />
 
 Notification Screen
@@ -88,33 +92,3 @@ Gemini Chat
 | Backend | Firebase (Firestore, Auth, Cloud Functions, FCM, App Check) |
 | State Management | BLoC / Cubit, Provider, GetX |
 | AI | Google Gemini API |
-| Recommendations | Custom collaborative filtering engine |
-| Charts | Syncfusion Flutter Charts |
-| Image Handling | Parallel uploads via `Future.wait`, pure-Dart compression |
-
----
- 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/your-username/dm-store.git
-cd dm-store
-
-# Install dependencies
-flutter pub get
-
-# Run the app
-flutter run
-```
-
-### Firebase Setup
-
-1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
-2. Add your Android/iOS app and download `google-services.json` / `GoogleService-Info.plist`
-3. Place the config files in the appropriate directories:
-   - Android: `android/app/google-services.json`
-   - iOS: `ios/Runner/GoogleService-Info.plist`
-4. Enable **Authentication** (Email, Google, Phone)
-5. Enable **Firestore**, **FCM**, and **App Check**
-6. Add SHA-1 and SHA-256 fingerprints for Google Sign-In and Phone Auth

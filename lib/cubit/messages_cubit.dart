@@ -343,7 +343,7 @@ class MessageCubit extends Cubit<MessageState> {
   ) async {
     final id = const Uuid().v4();
 
-    final localMsg = Message(
+    Message localMsg = Message(
       id: id,
       senderId: userId!,
       statusMessage: StatusMessage.sending,
@@ -390,6 +390,16 @@ class MessageCubit extends Cubit<MessageState> {
     });
 
     try {
+      localMsg = Message(
+        id: id,
+        senderId: userId!,
+        statusMessage: StatusMessage.sending,
+        message: text,
+        time: Timestamp.now().millisecondsSinceEpoch,
+        isRead: false,
+        product: state.productMessage,
+      );
+
       await sendMessage(localMsg, context);
     } catch (_) {
       await localBox.put(id, {
@@ -472,10 +482,6 @@ class MessageCubit extends Cubit<MessageState> {
     final ref = Collections.conversations.doc(userId);
 
     final messageRef = Collections.messages(userId!).doc(message.id);
-
-    final user = context.read<UserProvider>().user;
-
-    if (user == null) return;
 
     final now = Timestamp.now().millisecondsSinceEpoch;
 
