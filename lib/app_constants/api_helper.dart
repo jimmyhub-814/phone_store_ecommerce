@@ -6,8 +6,11 @@ import 'package:phone_store/app_constants/api_config.dart';
 class ApiHelper {
   Future<String> sendMsgApi({required String msg}) async {
     try {
+      final url = Uri.parse(
+        "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${ApiConfig.geminiApiKey}",
+      );
       final response = await http.post(
-        Uri.parse("${ApiConfig.geminiBaseUrl}?key=${ApiConfig.geminiApiKey}"),
+      url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "contents": [

@@ -32,6 +32,7 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> loadData() async {
     if (AuthHelper.currentUser != null) {
       context.read<UserProvider>().getUserInfo();
+      context.read<OrderProvider>().loadOrders();
     }
   }
 

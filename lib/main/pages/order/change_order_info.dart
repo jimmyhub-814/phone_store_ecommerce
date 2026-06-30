@@ -3,9 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
+import 'package:phone_store/app_constants/api_config.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/app_constants/app_key.dart';
-import 'package:phone_store/app_constants/app_textStyles.dart'; 
+import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/models/user.dart';
 import 'package:phone_store/provider/user_provider.dart';
@@ -297,7 +297,7 @@ class _ChangeOrderInfoState extends State<ChangeOrderInfo> {
   Widget placesAutoCompleteTextField() {
     return GooglePlaceAutoCompleteTextField(
       textEditingController: addressController,
-      googleAPIKey: AppKey.googleAPIKey,
+      googleAPIKey: ApiConfig.googleMapPrivateKey,
       focusNode: addressFocusNode,
       boxDecoration: BoxDecoration(
         color: AppColors.surface,

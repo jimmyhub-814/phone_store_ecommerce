@@ -8,8 +8,6 @@ import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/models/conversation.dart';
 import 'package:phone_store/models/message_model.dart';
-import 'package:phone_store/provider/user_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:equatable/equatable.dart';
 
