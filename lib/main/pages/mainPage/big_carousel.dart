@@ -1,5 +1,5 @@
 import 'package:card_swiper/card_swiper.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/storages.dart';
 import 'package:shimmer/shimmer.dart';
 

@@ -156,15 +156,6 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // EmailOTP.config(
-  //   appName: 'DL Store',
-  //   expiry: 60000,
-  //   otpType: OTPType.numeric,
-  //   emailTheme: EmailTheme.v6,
-  //   otpLength: 4,
-  //   appEmail: 'dmcompany.com',
-  // );
-
   FlutterNativeSplash.remove();
   runApp(MultiBlocProvider(
     providers: [
@@ -404,7 +395,7 @@ class _MyAppState extends State<MyApp> {
         '/account': (context) => const AccountPage(),
         '/user-info': (context) => const UserInfoPage(),
         '/cart-screen': (context) => const CartPage(),
-        '/search_page': (context) => const SearchPage(),
+        '/search-page': (context) => const SearchPage(),
         '/fail-to-order': (context) => const FailOrder(),
         '/cancel-order': (context) => const CancelOrderPage(),
         '/gemini-AI': (context) => const ChatAI(),

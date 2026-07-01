@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:phone_store/app_constants/app_colors.dart'; 
+import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/main/auth/complete_profile_page.dart';
 import 'package:phone_store/main/auth/login.dart';
@@ -43,7 +43,7 @@ class _AuthGateState extends State<AuthGate> {
         if (user == null) return const LoginPage();
 
         final isGoogle =
-            user.providerData.any((p) => p.providerId == 'google.com');  
+            user.providerData.any((p) => p.providerId == 'google.com');
         return StreamBuilder<DocumentSnapshot>(
           stream: Collections.user.doc(user.uid).snapshots(),
           builder: (context, snap) {
@@ -72,7 +72,7 @@ class _AuthGateState extends State<AuthGate> {
             }
 
             final data = snap.data!.data() as Map<String, dynamic>?;
- 
+
             if (data?[UserApp.isCompletedField] != true) {
               return CompleteProfilePage(
                 userId: user.uid,

@@ -25,7 +25,7 @@ class _SearchPageState extends State<SearchPage> {
   List<Product> _results = [];
   final FocusNode _focusNode = FocusNode();
   bool isLoading = false;
-  
+
   @override
   void initState() {
     super.initState();

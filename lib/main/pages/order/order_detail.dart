@@ -21,6 +21,7 @@ class DetailOrder extends StatefulWidget {
 class _DetailOrderState extends State<DetailOrder> {
   bool expandedAddress = false;
   late Future _orderFuture;
+
   @override
   void initState() {
     super.initState();
@@ -42,8 +43,9 @@ class _DetailOrderState extends State<DetailOrder> {
           onTimeout: () => null,
         );
 
-    if (mounted)
+    if (mounted) {
       _orderFuture = context.read<OrderProvider>().getUserOrder(widget.orderId);
+    }
   }
 
   String formatDateTime(Timestamp timestamp) {
@@ -223,7 +225,9 @@ class _DetailOrderState extends State<DetailOrder> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                      fontSize: 12, color: Color(0xFFBDBDBD)),
+                                    fontSize: 12,
+                                    color: Color(0xFFBDBDBD),
+                                  ),
                                 ),
                                 const SizedBox(height: 6),
                                 Row(
@@ -254,7 +258,9 @@ class _DetailOrderState extends State<DetailOrder> {
                                     ),
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 2),
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: const Color(0xFFF5F6FA),
                                         borderRadius: BorderRadius.circular(6),
@@ -328,7 +334,8 @@ class _DetailOrderState extends State<DetailOrder> {
                                 content: const Text('Đã sao chép mã đơn hàng'),
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 margin: const EdgeInsets.all(16),
                                 duration: const Duration(seconds: 2),
                               ),
@@ -343,8 +350,11 @@ class _DetailOrderState extends State<DetailOrder> {
                             ),
                             child: const Row(
                               children: [
-                                Icon(Icons.copy_rounded,
-                                    size: 11, color: AppColors.primary),
+                                Icon(
+                                  Icons.copy_rounded,
+                                  size: 11,
+                                  color: AppColors.primary,
+                                ),
                                 SizedBox(width: 3),
                                 Text(
                                   'Copy',
@@ -380,14 +390,20 @@ class _DetailOrderState extends State<DetailOrder> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: Text(label,
-                                style: const TextStyle(
-                                    fontSize: 12, color: Color(0xFF6B7280))),
+                            child: Text(
+                              label,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF6B7280),
+                              ),
+                            ),
                           ),
                           Text(
                             formatDateTime(e.time),
                             style: const TextStyle(
-                                fontSize: 12, color: Color(0xFF9E9E9E)),
+                              fontSize: 12,
+                              color: Color(0xFF9E9E9E),
+                            ),
                           ),
                         ],
                       ),
@@ -402,7 +418,7 @@ class _DetailOrderState extends State<DetailOrder> {
       ),
     );
   }
- 
+
   Widget _buildStatusTimeline(order, bool isCancelled) {
     final steps = isCancelled
         ? ['Đặt hàng', 'Đã hủy']
@@ -503,7 +519,7 @@ class _DetailOrderState extends State<DetailOrder> {
       ),
     );
   }
- 
+
   Widget _buildCard({required List<Widget> children}) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -570,13 +586,22 @@ class _DetailOrderState extends State<DetailOrder> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Lưu ý giao hàng',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                const Text(
+                  'Lưu ý giao hàng',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(note,
-                    style: const TextStyle(
-                        fontSize: 12, height: 1.5, color: Color(0xFF6B7280))),
+                Text(
+                  note,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    height: 1.5,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
               ],
             ),
           ),

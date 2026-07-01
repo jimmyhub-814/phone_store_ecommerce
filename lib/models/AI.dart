@@ -14,7 +14,7 @@ class AIModel {
   bool isUser;
   bool isStreaming;
   bool isLoading;
-  
+
   AIModel({
     required this.id,
     required this.message,

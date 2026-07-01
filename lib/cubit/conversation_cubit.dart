@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart'; 
+import 'package:bloc/bloc.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/models/conversation.dart';
@@ -24,38 +24,6 @@ class ConversationState extends Equatable {
   List<Object?> get props => [unreadCount];
 }
 
-// class ConversationCubit extends Cubit<ConversationState> {
-//   ConversationCubit() : super(const ConversationState());
-
-//   final userId = AuthHelper.userId;
-
-//   // =========================
-//   // STREAM MESSAGE
-//   // =========================
-//   void init() {
-//     streamConversation().listen((conversation) {
-//       if (conversation != null) {
-//         final count = conversation.unreadCount[UnreadCountBy.user.name] ?? 0;
-//         emit(state.copyWith(unreadCount: count));
-//       }
-//     });
-//   }
-
-//   Stream<Conversation?> streamConversation() {
-//     return Collections.conversations
-//         .doc(userId!)
-//         .snapshots()
-//         .map((doc) {
-//           try {
-//             return Conversation.fromMap(doc.data()!);
-//           } catch (e) {
-//             return null;
-//           }
-//         })
-//         .where((m) => m != null)
-//         .cast<Conversation>();
-//   }
-// }
 class ConversationCubit extends Cubit<ConversationState> {
   ConversationCubit() : super(const ConversationState());
 

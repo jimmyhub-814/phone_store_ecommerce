@@ -55,8 +55,7 @@ class _FavoritePageState extends State<FavoritePage> {
       body: Consumer<FavoriteProvider>(
         builder: (context, provider, child) {
           return FutureBuilder<List<Product>>(
-            future: provider.loadFavoriteProducts(
-                provider.favorite, products),
+            future: provider.loadFavoriteProducts(provider.favorite, products),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(

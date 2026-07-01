@@ -33,7 +33,7 @@ class CategoryProvider extends ChangeNotifier {
           continue;
         }
       }
-      
+
       _categories.shuffle();
     } catch (e) {
       print('❌ Lỗi fetch categories: $e');

@@ -22,7 +22,7 @@ class AppbarIcon extends StatelessWidget {
         child: IconButton(
           padding: EdgeInsets.zero,
           onPressed: onTap ?? () => Navigator.pop(context),
-          icon:  Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 14,
             color: color ?? AppColors.primary,

@@ -6,7 +6,7 @@ class AppColors {
   // ========================
   // BRAND
   // ========================
-  static const primary = Color(0xFF224480); 
+  static const primary = Color(0xFF224480);
   static const primaryDark = Color(0xFF0B1F3A);
 
   // ========================
@@ -29,7 +29,7 @@ class AppColors {
   // BORDER
   // ========================
   static const border = Color(0xFFD2D2D2);
-  static const lightBorder =  Color.fromARGB(255, 244, 244, 244);
+  static const lightBorder = Color.fromARGB(255, 244, 244, 244);
 
   // ========================
   // ICON

@@ -23,7 +23,7 @@ class _BestSellerItemState extends State<BestSellerItem> {
     if (!mounted) return;
     final provider = context.read<ProductProvider>();
 
-    if (provider.isLoading) { 
+    if (provider.isLoading) {
       void listener() {
         if (!provider.isLoading && provider.products.isNotEmpty) {
           provider.loadRecommendations();
@@ -49,10 +49,10 @@ class _BestSellerItemState extends State<BestSellerItem> {
         ),
         const SizedBox(height: 10),
         Consumer<ProductProvider>(
-          builder: (context, provider, child) { 
+          builder: (context, provider, child) {
             if (!provider.isLoading &&
                 provider.products.isNotEmpty &&
-                provider.recommendedProducts == provider.products) { 
+                provider.recommendedProducts == provider.products) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 provider.loadRecommendations();
               });
@@ -63,8 +63,7 @@ class _BestSellerItemState extends State<BestSellerItem> {
             }
 
             final products = provider.recommendedProducts;
-            print('products: ${provider.products.length}');
-            print('recommended: ${provider.recommendedProducts.length}');
+
             return Column(
               children: [
                 GridView.builder(
@@ -87,7 +86,9 @@ class _BestSellerItemState extends State<BestSellerItem> {
                   child: Text(
                     'No more products found.',
                     style: TextStyle(
-                        color: AppColors.accent, fontWeight: FontWeight.w700),
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],

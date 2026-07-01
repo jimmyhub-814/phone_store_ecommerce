@@ -795,12 +795,10 @@ class _MessagePageState extends State<MessagePage> {
                               ],
                             ),
                           ),
- 
                           Container(
                             height: 1,
                             color: Colors.white.withValues(alpha: 0.06),
                           ),
- 
                           ClipRRect(
                             borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(16),
@@ -808,7 +806,7 @@ class _MessagePageState extends State<MessagePage> {
                             ),
                             child: IntrinsicHeight(
                               child: Row(
-                                children: [ 
+                                children: [
                                   Expanded(
                                     child: InkWell(
                                       onTap: () => _showVariantSheet(
@@ -845,12 +843,10 @@ class _MessagePageState extends State<MessagePage> {
                                       ),
                                     ),
                                   ),
-
                                   Container(
                                     width: 1,
                                     color: Colors.white.withValues(alpha: 0.06),
                                   ),
-
                                   Expanded(
                                     child: InkWell(
                                       onTap: () => _showVariantSheet(

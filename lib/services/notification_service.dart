@@ -62,7 +62,7 @@ class NotificationService {
 
     await _localNotificationsPlugin.initialize(
       initSettings,
-      onDidReceiveNotificationResponse: (response) {  
+      onDidReceiveNotificationResponse: (response) {
         _handleMessage(response.payload);
       },
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
@@ -129,7 +129,7 @@ class NotificationService {
       final data = jsonDecode(payload);
       final orderId = data['orderId']?.toString();
       if (orderId == null || orderId.isEmpty) return;
- 
+
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         print("⏳ Chờ auth state...");

@@ -40,12 +40,14 @@ class AuthUserProvider extends ChangeNotifier {
 
     final phone = AppUtils.formatPhone(phoneController.text);
     bool exists = await isPhoneAlreadyRegistered(phone);
+    
     if (exists) {
       _isLoading = false;
       notifyListeners();
       AppUtils.showMessage(context, 'Số điện thoại này đã được đăng ký.');
       return;
     }
+
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: phone,
       timeout: const Duration(seconds: 60),

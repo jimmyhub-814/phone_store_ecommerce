@@ -9,7 +9,7 @@ import 'package:phone_store/app_constants/app_utils.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/app_constants/storages.dart';
-import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart'; 
+import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/main/pages/shared_widgets/input_form.dart';
 import 'package:phone_store/main/auth/login.dart';
 import 'package:phone_store/models/user.dart';
@@ -65,13 +65,14 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
     isPhone = currentUser!.providerData.any((p) => p.providerId == 'phone');
   }
 
-  // ================= SUBMIT =================
   Future<void> submitProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_pickedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select your avatar')),
+        const SnackBar(
+          content: Text('Please select your avatar'),
+        ),
       );
       return;
     }
@@ -94,22 +95,18 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       final userId = AuthHelper.userId;
       final file = File(_pickedImage!);
 
-      // ================== UPLOAD ẢNH LÊN STORAGE ==================
       final storageRef = Storages.user(userId!);
 
       await storageRef.putFile(file);
       final userImg = await storageRef.getDownloadURL();
 
-      // ================== LẤY FCM TOKEN ==================
       final token = await NotificationService().getDeviceToken();
 
-      // ================== CHECK USER ĐÃ TỒN TẠI CHƯA ==================
       final userDoc = Collections.user.doc(userId);
 
       final snapshot = await userDoc.get();
 
       if (snapshot.exists) {
-        // UPDATE
         await userDoc.update({
           UserApp.idField: userId,
           UserApp.userNameField: _fullNameController.text.trim(),

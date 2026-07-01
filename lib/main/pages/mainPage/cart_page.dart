@@ -24,9 +24,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   bool hasShownSnackbar = false;
   double _lastKnownTotal = 0;
-
   final Map<String, Future<Product?>> _productFutures = {};
-
   CartProvider? _cartProvider;
 
   @override
@@ -508,10 +506,9 @@ class _CartPageState extends State<CartPage> {
                                                                         .center,
                                                                 child:
                                                                     const Icon(
-                                                                        Icons
-                                                                            .add,
-                                                                        size:
-                                                                            14),
+                                                                  Icons.add,
+                                                                  size: 14,
+                                                                ),
                                                               ),
                                                             ),
                                                           ],

@@ -131,57 +131,58 @@ class _OtpDialogState extends State<OtpDialog> {
                       height: 48,
                       child: ElevatedButton(
                         onPressed: length == 6 && !provider.isLoading
-                              ? () async {
-                                  bool ok;
+                            ? () async {
+                                bool ok;
 
-                                  if (widget.status == 'register') {
-                                    ok = await provider.verifyOtpRegistered(
-                                        _otpController.text);
-                                  } else {
-                                    ok = await provider
-                                        .verifyOtpLogin(_otpController.text);
-                                  }
-
-                                  if (ok && context.mounted) {
-                                    Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(
-                                          builder: (_) => const AuthGate()),
-                                      (route) => false,
-                                    );
-                                  } else if (!ok && context.mounted) {
-                                    AppUtils.showMessage(
-                                        context,
-                                        provider.errorMessage ??
-                                            'Mã OTP không đúng');
-                                  }
+                                if (widget.status == 'register') {
+                                  ok = await provider
+                                      .verifyOtpRegistered(_otpController.text);
+                                } else {
+                                  ok = await provider
+                                      .verifyOtpLogin(_otpController.text);
                                 }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor:
-                                AppColors.primary.withValues(alpha: 0.4),
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
+
+                                if (ok && context.mounted) {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (_) => const AuthGate()),
+                                    (route) => false,
+                                  );
+                                } else if (!ok && context.mounted) {
+                                  AppUtils.showMessage(
+                                      context,
+                                      provider.errorMessage ??
+                                          'Mã OTP không đúng');
+                                }
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor:
+                              AppColors.primary.withValues(alpha: 0.4),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          child: !context.read<AuthUserProvider>().isLoading
-                              ? const Text(
-                                  'Xác minh',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              : const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )),
+                        ),
+                        child: !context.read<AuthUserProvider>().isLoading
+                            ? const Text(
+                                'Xác minh',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            : const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextButton(

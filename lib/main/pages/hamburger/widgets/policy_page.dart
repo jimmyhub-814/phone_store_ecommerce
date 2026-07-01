@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
-import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart'; 
+import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 
 class PolicyPage extends StatelessWidget {
   String content;
@@ -187,7 +187,6 @@ Email: mynguyen.vo0974@gmail.com
                         textContent,
                         style: AppTextstyles.headingH7,
                       ),
-                  
                     ],
                   ),
                 ),

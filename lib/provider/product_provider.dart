@@ -20,8 +20,8 @@ class ProductProvider extends ChangeNotifier {
     if (_products.isEmpty || _recommendationsLoaded) return;
     if (_products.isEmpty || _recommendationsLoaded) {
       return;
-    }  
-    _recommendationsLoaded = true; 
+    }
+    _recommendationsLoaded = true;
     try {
       _recommendedProducts =
           await _recommendationService.getRecommendedProducts(_products);
@@ -179,7 +179,7 @@ class ProductProvider extends ChangeNotifier {
     final keywords = query
         .toLowerCase()
         .trim()
-        .split(RegExp(r'\s+')) 
+        .split(RegExp(r'\s+'))
         .where((k) => k.isNotEmpty)
         .toList();
 

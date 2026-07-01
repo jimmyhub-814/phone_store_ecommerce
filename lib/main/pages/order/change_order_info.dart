@@ -57,7 +57,6 @@ class _ChangeOrderInfoState extends State<ChangeOrderInfo> {
       return false;
     }
 
-    // Địa chỉ phải có ít nhất 2 dấu phẩy
     final commaCount = ','.allMatches(address).length;
 
     if (commaCount < 2) {
@@ -96,9 +95,7 @@ class _ChangeOrderInfoState extends State<ChangeOrderInfo> {
     addressFocusNode = FocusNode();
 
     nameController = TextEditingController(text: widget.userName ?? '');
-
     phoneController = TextEditingController(text: widget.userPhone ?? '');
-
     addressController = TextEditingController(text: widget.userAddress ?? '');
   }
 

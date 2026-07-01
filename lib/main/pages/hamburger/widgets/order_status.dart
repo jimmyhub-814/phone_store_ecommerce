@@ -166,10 +166,14 @@ class _OrderStatusPageState extends State<OrderStatusPage>
         appBar: AppBar(
           backgroundColor: AppColors.surface,
           leading: AppbarIcon(),
+          centerTitle: true,
           title: const Text(
             'Đơn hàng đã mua',
             style: TextStyle(
               color: AppColors.textSecondary,
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
             ),
           ),
           bottom: PreferredSize(
@@ -181,7 +185,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
               tabAlignment: TabAlignment.start,
               labelColor: AppColors.primary,
               unselectedLabelColor: AppColors.iconPrimary,
-              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+              labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold, color: AppColors.primaryDark),
               unselectedLabelStyle:
                   const TextStyle(fontWeight: FontWeight.w500),
               tabs: const [
@@ -675,8 +680,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                             children: [
                               _actionButton(
                                 text: "Liên hệ shop",
-                                color: AppColors.dangerLight,
-                                textColor: AppColors.danger,
+                                color: AppColors.surfaceLight,
+                                textColor: AppColors.primary,
                                 onPressed: () async {
                                   await FlutterPhoneDirectCaller.callNumber(
                                       "0852711187");
@@ -685,10 +690,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                               const SizedBox(width: 10),
                               _actionButton(
                                 text: "Hủy đơn",
-                                color: AppColors.surfaceLight,
-                                textColor: _cancellingOrders.contains(order.id)
-                                    ? Colors.grey
-                                    : Colors.black87,
+                                color: AppColors.primary,
+                                textColor: AppColors.surfaceLight,
                                 onPressed: _cancellingOrders.contains(order.id)
                                     ? () => loadData()
                                     : () async {
@@ -787,8 +790,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                             children: [
                               _actionButton(
                                 text: "Liên hệ shop",
-                                color: AppColors.dangerLight,
-                                textColor: AppColors.danger,
+                                color: AppColors.surfaceLight,
+                                textColor: AppColors.primary,
                                 onPressed: () async {
                                   await FlutterPhoneDirectCaller.callNumber(
                                       "0852711187");
@@ -805,8 +808,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                             children: [
                               _actionButton(
                                 text: "Liên hệ shop",
-                                color: AppColors.dangerLight,
-                                textColor: AppColors.danger,
+                                color: AppColors.surfaceLight,
+                                textColor: AppColors.primary,
                                 onPressed: () async {
                                   await FlutterPhoneDirectCaller.callNumber(
                                       "0852711187");
@@ -841,8 +844,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                                     )
                                   : _actionButton(
                                       text: "Đánh giá",
-                                      color: AppColors.accent,
-                                      textColor: AppColors.dangerLight,
+                                      color: AppColors.primary,
+                                      textColor: AppColors.scaffoldBg,
                                       onPressed: _feedbackingOrders
                                               .contains(order.id)
                                           ? () => loadData()

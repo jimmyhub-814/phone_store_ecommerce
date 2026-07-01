@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/policy_page.dart';
-import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart'; 
+import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/app_constants/app_utils.dart';
 
 class SupportCenterPage extends StatelessWidget {

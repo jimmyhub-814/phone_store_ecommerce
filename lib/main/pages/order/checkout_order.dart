@@ -128,7 +128,7 @@ class _CheckoutOrderState extends State<CheckoutOrder> {
           title: const Row(
             children: [
               Icon(
-                Icons.edit_note_rounded,
+                Icons.edit_outlined,
                 color: AppColors.primary,
               ),
               SizedBox(width: 8),
@@ -214,582 +214,588 @@ class _CheckoutOrderState extends State<CheckoutOrder> {
         centerTitle: true,
         backgroundColor: AppColors.accent,
       ),
-      body: Consumer<UserProvider>(builder: (context, provider, child) {
-        final user = provider.user;
-        
-        if (provider.isLoading || user == null) {
-          return Center(
-            child: LoadingAnimationWidget.waveDots(
-              color: AppColors.primary,
-              size: 60,
-            ),
-          );
-        }
-        return Column(
-          children: [
-            Expanded(
-              child: Container(
-                color: AppColors.surfaceLight,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                        Navigator.pushNamed(
-                          context,
-                          ShippingInfoPage.routeName,
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.location_on,
-                              color: AppColors.accent,
-                            ),
-                            const SizedBox(width: 5),
-                            Expanded(
-                              child: user.shippingInfo.isNotEmpty
-                                  ? Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              user.shippingInfo[0].fullName,
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Text(
-                                              user.shippingInfo[0].phone,
-                                              maxLines: 1,
-                                              style: const TextStyle(
-                                                color: AppColors.iconDisabled,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Text(
-                                          user.shippingInfo[0].address,
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    )
-                                  : GestureDetector(
-                                      onTap: () => Navigator.pushNamed(
-                                        context,
-                                        ShippingInfoPage.routeName,
-                                      ),
-                                      child: const Text(
-                                        'Vui lòng thêm thông tin nhận hàng!',
-                                        style: TextStyle(
-                                          color: AppColors.iconSecondary,
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            const Icon(Icons.arrow_forward_ios),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      width: size.width - 30,
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        children: [
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: orderProduct.isEmpty
-                                ? widget.orderProduct.length
-                                : orderProduct.length,
-                            separatorBuilder: (context, index) {
-                              return const SizedBox(height: 10);
-                            },
-                            itemBuilder: (context, i) {
-                              final item = orderProduct.isEmpty
-                                  ? widget.orderProduct[i]
-                                  : orderProduct[i];
+      body: Consumer<UserProvider>(
+        builder: (context, provider, child) {
+          final user = provider.user;
 
-                              return SizedBox(
-                                height: 55,
-                                child: Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: SafeImage(
-                                        url: item.phoneImage,
-                                        width: size.width / 8,
-                                        height: size.width / 8,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Column(
+          if (provider.isLoading || user == null) {
+            return Center(
+              child: LoadingAnimationWidget.waveDots(
+                color: AppColors.primary,
+                size: 60,
+              ),
+            );
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: Container(
+                  color: AppColors.surfaceLight,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          Navigator.pushNamed(
+                            context,
+                            ShippingInfoPage.routeName,
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                color: AppColors.accent,
+                              ),
+                              const SizedBox(width: 5),
+                              Expanded(
+                                child: user.shippingInfo.isNotEmpty
+                                    ? Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            item.phoneName,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            item.variantsName,
-                                            style: AppTextstyles.smallText
-                                                .copyWith(
-                                              color: AppColors.border,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
                                           Row(
                                             children: [
                                               Text(
-                                                '${NumberFormat("#,###", "en_US").format(
-                                                  item.phonePrice -
-                                                      (item.phonePrice *
-                                                              item.phoneDiscount) /
-                                                          100,
-                                                )}đ',
-                                                style: const TextStyle(
-                                                    color: AppColors.accent,
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                                user.shippingInfo[0].fullName,
                                               ),
                                               const SizedBox(width: 5),
                                               Text(
-                                                '${NumberFormat("#,###", "en_US").format(item.phonePrice)}đ',
-                                                style: AppTextstyles
-                                                    .extraSmallText
-                                                    .copyWith(
-                                                  color: AppColors.border,
-                                                  fontWeight: FontWeight.bold,
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              Text(
-                                                'x${item.quantity}',
-                                                style: AppTextstyles.smallText
-                                                    .copyWith(
-                                                  color: AppColors.border,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Divider(
-                            height: 1,
-                            color: AppColors.lightBorder,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: GestureDetector(
-                              onTap: showOrderNoteDialog,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text('Lời nhắn cho Shop'),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  SizedBox(
-                                    width: 150,
-                                    child: orderNote.isEmpty
-                                        ? const Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                'Để lại lời nhắn',
-                                                style: TextStyle(
-                                                    color: AppColors
-                                                        .iconSecondary),
-                                              ),
-                                              Icon(
-                                                Icons.chevron_right,
-                                                size: 16,
-                                              )
-                                            ],
-                                          )
-                                        : Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                orderNote,
+                                                user.shippingInfo[0].phone,
                                                 maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(
                                                   color: AppColors.iconDisabled,
                                                 ),
                                               ),
-                                              const Icon(
-                                                Icons.chevron_right,
-                                                size: 16,
-                                              )
                                             ],
                                           ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Phương thức thanh toán',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          ValueListenableBuilder<String>(
-                            valueListenable: selected,
-                            builder: (context, value, child) {
-                              final options = [
-                                'Thanh toán khi nhận hàng',
-                                'Thanh toán bằng thẻ ngân hàng'
-                              ];
-                              return Column(
-                                children: List.generate(
-                                  options.length * 2 - 1,
-                                  (index) {
-                                    if (index.isOdd) {
-                                      return const Divider(height: 1);
-                                    }
-                                    final option = options[index ~/ 2];
-
-                                    return RadioListTile<String>(
-                                      title: Text(
-                                        option,
-                                        style: const TextStyle(
-                                          color: Colors.grey,
+                                          Text(
+                                            user.shippingInfo[0].address,
+                                            style: const TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
+                                      )
+                                    : GestureDetector(
+                                        onTap: () => Navigator.pushNamed(
+                                          context,
+                                          ShippingInfoPage.routeName,
+                                        ),
+                                        child: const Text(
+                                          'Vui lòng thêm thông tin nhận hàng!',
+                                          style: TextStyle(
+                                            color: AppColors.iconSecondary,
+                                          ),
                                         ),
                                       ),
-                                      value: option,
-                                      groupValue: value,
-                                      onChanged: (newValue) =>
-                                          selected.value = newValue!,
-                                      activeColor: Colors.blue,
-                                      controlAffinity:
-                                          ListTileControlAffinity.trailing,
-                                      visualDensity: VisualDensity.compact,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
+                              ),
+                              const Icon(Icons.arrow_forward_ios),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              height: 70,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Text('Tổng cộng', style: AppTextstyles.headingH7),
-                      const SizedBox(width: 5),
-                      Text(
-                        '${NumberFormat("#,###", "en_US").format(totalPrice != 0 ? totalPrice : widget.totalPrice)}đ',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.accent,
+                      const SizedBox(height: 10),
+                      Container(
+                        width: size.width - 30,
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: orderProduct.isEmpty
+                                  ? widget.orderProduct.length
+                                  : orderProduct.length,
+                              separatorBuilder: (context, index) {
+                                return const SizedBox(height: 10);
+                              },
+                              itemBuilder: (context, i) {
+                                final item = orderProduct.isEmpty
+                                    ? widget.orderProduct[i]
+                                    : orderProduct[i];
+
+                                return SizedBox(
+                                  height: 55,
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: SafeImage(
+                                          url: item.phoneImage,
+                                          width: size.width / 8,
+                                          height: size.width / 8,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              item.phoneName,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              item.variantsName,
+                                              style: AppTextstyles.smallText
+                                                  .copyWith(
+                                                color: AppColors.border,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  '${NumberFormat("#,###", "en_US").format(
+                                                    item.phonePrice -
+                                                        (item.phonePrice *
+                                                                item.phoneDiscount) /
+                                                            100,
+                                                  )}đ',
+                                                  style: const TextStyle(
+                                                      color: AppColors.accent,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                Text(
+                                                  '${NumberFormat("#,###", "en_US").format(item.phonePrice)}đ',
+                                                  style: AppTextstyles
+                                                      .extraSmallText
+                                                      .copyWith(
+                                                    color: AppColors.border,
+                                                    fontWeight: FontWeight.bold,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                  ),
+                                                ),
+                                                const Spacer(),
+                                                Text(
+                                                  'x${item.quantity}',
+                                                  style: AppTextstyles.smallText
+                                                      .copyWith(
+                                                    color: AppColors.border,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Divider(
+                              height: 1,
+                              color: AppColors.lightBorder,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: GestureDetector(
+                                onTap: showOrderNoteDialog,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Lời nhắn cho Shop'),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    SizedBox(
+                                      width: 150,
+                                      child: orderNote.isEmpty
+                                          ? const Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  'Để lại lời nhắn',
+                                                  style: TextStyle(
+                                                      color: AppColors
+                                                          .iconSecondary),
+                                                ),
+                                                Icon(
+                                                  Icons.chevron_right,
+                                                  size: 16,
+                                                )
+                                              ],
+                                            )
+                                          : Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  orderNote,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    color:
+                                                        AppColors.iconDisabled,
+                                                  ),
+                                                ),
+                                                const Icon(
+                                                  Icons.chevron_right,
+                                                  size: 16,
+                                                )
+                                              ],
+                                            ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Phương thức thanh toán',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ValueListenableBuilder<String>(
+                              valueListenable: selected,
+                              builder: (context, value, child) {
+                                final options = [
+                                  'Thanh toán khi nhận hàng',
+                                  'Thanh toán bằng thẻ ngân hàng'
+                                ];
+                                return Column(
+                                  children: List.generate(
+                                    options.length * 2 - 1,
+                                    (index) {
+                                      if (index.isOdd) {
+                                        return const Divider(height: 1);
+                                      }
+                                      final option = options[index ~/ 2];
+
+                                      return RadioListTile<String>(
+                                        title: Text(
+                                          option,
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        value: option,
+                                        groupValue: value,
+                                        onChanged: (newValue) =>
+                                            selected.value = newValue!,
+                                        activeColor: Colors.blue,
+                                        controlAffinity:
+                                            ListTileControlAffinity.trailing,
+                                        visualDensity: VisualDensity.compact,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      backgroundColor: orderProduct.isNotEmpty
-                          ? AppColors.accent
-                          : AppColors.iconDisabled,
-                      shadowColor: Colors.transparent,
-                    ).copyWith(
-                      overlayColor:
-                          MaterialStateProperty.all(Colors.transparent),
+                ),
+              ),
+              Container(
+                height: 70,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Text('Tổng cộng', style: AppTextstyles.headingH7),
+                        const SizedBox(width: 5),
+                        Text(
+                          '${NumberFormat("#,###", "en_US").format(totalPrice != 0 ? totalPrice : widget.totalPrice)}đ',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                      ],
                     ),
-                    onPressed: orderProduct.isNotEmpty
-                        ? () async {
-                            if (user.shippingInfo.isNull ||
-                                user.shippingInfo.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Vui lòng thêm địa chỉ đặt hàng.',
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: orderProduct.isNotEmpty
+                            ? AppColors.accent
+                            : AppColors.iconDisabled,
+                        shadowColor: Colors.transparent,
+                      ).copyWith(
+                        overlayColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                      ),
+                      onPressed: orderProduct.isNotEmpty
+                          ? () async {
+                              if (user.shippingInfo.isNull ||
+                                  user.shippingInfo.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Vui lòng thêm địa chỉ đặt hàng.',
+                                    ),
+                                    duration: Duration(
+                                      seconds: 2,
+                                    ),
                                   ),
-                                  duration: Duration(
-                                    seconds: 2,
-                                  ),
-                                ),
-                              );
-                              return;
-                            }
+                                );
+                                return;
+                              }
 
-                            Timestamp now = Timestamp.now();
-                            final userInfo = OrderUserInfo(
-                                userId: AuthHelper.userId!,
-                                userName: user.shippingInfo[0].fullName,
-                                userAddress: user.shippingInfo[0].address,
-                                userAvatar: user.userAvatar,
-                                userPhone: user.shippingInfo[0].phone);
+                              Timestamp now = Timestamp.now();
+                              final userInfo = OrderUserInfo(
+                                  userId: AuthHelper.userId!,
+                                  userName: user.shippingInfo[0].fullName,
+                                  userAddress: user.shippingInfo[0].address,
+                                  userAvatar: user.userAvatar,
+                                  userPhone: user.shippingInfo[0].phone);
 
-                            final orderInfo = OrderInfo(
-                                orderNote: orderNote,
-                                lastStatusTime: now,
-                                orderStatus: OrderStatus.pending.name,
-                                orderDate: now,
-                                methodPayment: selected.value,
-                                totalPrice: widget.totalPrice);
+                              final orderInfo = OrderInfo(
+                                  orderNote: orderNote,
+                                  lastStatusTime: now,
+                                  orderStatus: OrderStatus.pending.name,
+                                  orderDate: now,
+                                  methodPayment: selected.value,
+                                  totalPrice: widget.totalPrice);
 
-                            final orderHistory = StatusHistory(
-                                status: OrderStatus.pending.name,
-                                updateBy: UpdateBy.system.name,
-                                time: now);
+                              final orderHistory = StatusHistory(
+                                  status: OrderStatus.pending.name,
+                                  updateBy: UpdateBy.system.name,
+                                  time: now);
 
-                            final orderId = const Uuid()
-                                .v4()
-                                .replaceAll('-', '')
-                                .substring(0, 12);
-                            final order = UserOrder(
-                                id: orderId,
-                                orderProduct: orderProduct,
-                                userInfo: userInfo,
-                                orderInfo: orderInfo,
-                                statusHistory: [orderHistory]);
+                              final orderId = const Uuid()
+                                  .v4()
+                                  .replaceAll('-', '')
+                                  .substring(0, 12);
+                              final order = UserOrder(
+                                  id: orderId,
+                                  orderProduct: orderProduct,
+                                  userInfo: userInfo,
+                                  orderInfo: orderInfo,
+                                  statusHistory: [orderHistory]);
 
-                            final notiList = NotificationList(
-                                id: const Uuid()
-                                    .v4()
-                                    .replaceAll('-', '')
-                                    .substring(0, 12),
-                                body:
-                                    'Đơn hàng #$orderId đã được đặt thành công',
-                                title: 'Đặt thành công đơn hàng',
-                                timestamp: now);
+                              final notiList = NotificationList(
+                                  id: const Uuid()
+                                      .v4()
+                                      .replaceAll('-', '')
+                                      .substring(0, 12),
+                                  body:
+                                      'Đơn hàng #$orderId đã được đặt thành công',
+                                  title: 'Đặt thành công đơn hàng',
+                                  timestamp: now);
 
-                            try {
-                              if (selected.value ==
-                                  'Thanh toán khi nhận hàng') {
-                                bool processDone = false;
-                                if (orderProduct.isNotEmpty) {
-                                  processDone = await context
-                                      .read<OrderProvider>()
-                                      .uploadOrderToFirebase(order);
-                                }
+                              try {
+                                if (selected.value ==
+                                    'Thanh toán khi nhận hàng') {
+                                  bool processDone = false;
+                                  if (orderProduct.isNotEmpty) {
+                                    processDone = await context
+                                        .read<OrderProvider>()
+                                        .uploadOrderToFirebase(order);
+                                  }
 
-                                if (processDone) {
-                                  await Collections.notifications(
-                                          AuthHelper.userId!)
-                                      .doc(order.id)
-                                      .set({
-                                    NotificationModel.notificationListField:
-                                        FieldValue.arrayUnion(
-                                            [notiList.toMap()]),
-                                    NotificationModel.idField: order.id,
-                                    NotificationModel.readField: false,
-                                  }, SetOptions(merge: true));
+                                  if (processDone) {
+                                    await Collections.notifications(
+                                            AuthHelper.userId!)
+                                        .doc(order.id)
+                                        .set({
+                                      NotificationModel.notificationListField:
+                                          FieldValue.arrayUnion(
+                                              [notiList.toMap()]),
+                                      NotificationModel.idField: order.id,
+                                      NotificationModel.readField: false,
+                                    }, SetOptions(merge: true));
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Đặt hàng thành công!'),
-                                      backgroundColor: Colors.green,
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Đặt hàng thành công!'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+
+                                    Navigator.pushReplacementNamed(
+                                        context, SuccessOrder.routeName);
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Đặt hàng thất bại!'),
+                                          backgroundColor: Colors.deepOrange),
+                                    );
+
+                                    Navigator.pushReplacementNamed(
+                                        context, FailOrder.routeName);
+                                  }
+                                } else if (selected.value ==
+                                    'Thanh toán bằng thẻ ngân hàng') {
+                                  final paymentUrl =
+                                      VNPAYFlutter.instance.generatePaymentUrl(
+                                    url:
+                                        'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
+                                    version: '2.0.1',
+                                    tmnCode: 'SYTH2L9D',
+                                    txnRef: DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .toString(),
+                                    orderInfo: 'Thanh toan don hang',
+                                    amount: widget.totalPrice,
+                                    returnUrl:
+                                        "http://192.168.139.1/api/v1/orders/vnpay-return",
+                                    ipAdress: '192.168.1.1',
+                                    vnpayHashKey:
+                                        'AW1U28RSYCMY58SAKGHA6ZHF1QQ6D19E',
+                                    vnPayHashType: VNPayHashType.HMACSHA512,
+                                    vnpayExpireDate: DateTime.now().add(
+                                      const Duration(hours: 1),
                                     ),
                                   );
 
-                                  Navigator.pushReplacementNamed(
-                                      context, SuccessOrder.routeName);
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Đặt hàng thất bại!'),
-                                        backgroundColor: Colors.deepOrange),
-                                  );
+                                  await VNPAYFlutter.instance.show(
+                                    context: context,
+                                    paymentUrl: paymentUrl,
+                                    onPaymentSuccess: (params) async {
+                                      String vnpResponseCode =
+                                          params['vnp_ResponseCode'];
 
-                                  Navigator.pushReplacementNamed(
-                                      context, FailOrder.routeName);
-                                }
-                              } else if (selected.value ==
-                                  'Thanh toán bằng thẻ ngân hàng') {
-                                final paymentUrl =
-                                    VNPAYFlutter.instance.generatePaymentUrl(
-                                  url:
-                                      'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html',
-                                  version: '2.0.1',
-                                  tmnCode: 'SYTH2L9D',
-                                  txnRef: DateTime.now()
-                                      .millisecondsSinceEpoch
-                                      .toString(),
-                                  orderInfo: 'Thanh toan don hang',
-                                  amount: widget.totalPrice,
-                                  returnUrl:
-                                      "http://192.168.139.1/api/v1/orders/vnpay-return",
-                                  ipAdress: '192.168.1.1',
-                                  vnpayHashKey:
-                                      'AW1U28RSYCMY58SAKGHA6ZHF1QQ6D19E',
-                                  vnPayHashType: VNPayHashType.HMACSHA512,
-                                  vnpayExpireDate: DateTime.now().add(
-                                    const Duration(hours: 1),
-                                  ),
-                                );
-
-                                await VNPAYFlutter.instance.show(
-                                  context: context,
-                                  paymentUrl: paymentUrl,
-                                  onPaymentSuccess: (params) async {
-                                    String vnpResponseCode =
-                                        params['vnp_ResponseCode'];
-
-                                    if (vnpResponseCode == '00') {
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (_) => Center(
-                                          child:
-                                              LoadingAnimationWidget.waveDots(
-                                            color: AppColors.primary,
-                                            size: 60,
+                                      if (vnpResponseCode == '00') {
+                                        showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (_) => Center(
+                                            child:
+                                                LoadingAnimationWidget.waveDots(
+                                              color: AppColors.primary,
+                                              size: 60,
+                                            ),
                                           ),
-                                        ),
-                                      );
-
-                                      try {
-                                        await context
-                                            .read<OrderProvider>()
-                                            .uploadOrderToFirebase(order);
-
-                                        if (Navigator.canPop(context)) {
-                                          Navigator.pop(context);
-                                        }
-
-                                        Navigator.pushReplacementNamed(
-                                          context,
-                                          SuccessOrder.routeName,
                                         );
-                                      } catch (e) {
-                                        if (Navigator.canPop(context)) {
-                                          Navigator.pop(context);
-                                        }
 
+                                        try {
+                                          await context
+                                              .read<OrderProvider>()
+                                              .uploadOrderToFirebase(order);
+
+                                          if (Navigator.canPop(context)) {
+                                            Navigator.pop(context);
+                                          }
+
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            SuccessOrder.routeName,
+                                          );
+                                        } catch (e) {
+                                          if (Navigator.canPop(context)) {
+                                            Navigator.pop(context);
+                                          }
+
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Có lỗi xảy ra, vui lòng thử lại',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } else {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
-                                          const SnackBar(
+                                          SnackBar(
                                             content: Text(
-                                              'Có lỗi xảy ra, vui lòng thử lại',
+                                              "Thanh toán không thành công: $vnpResponseCode",
                                             ),
                                           ),
                                         );
                                       }
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            "Thanh toán không thành công: $vnpResponseCode",
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  onPaymentError: (params) {
-                                    print("Lỗi hệ thống: $params");
-                                  },
+                                    },
+                                    onPaymentError: (params) {
+                                      print("Lỗi hệ thống: $params");
+                                    },
+                                  );
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Đặt hàng thất bại: $e',
+                                    ),
+                                  ),
                                 );
                               }
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Đặt hàng thất bại: $e',
-                                  ),
-                                ),
-                              );
                             }
-                          }
-                        : null,
-                    child: const Text(
-                      'Đặt hàng',
-                      style: TextStyle(
-                        color: AppColors.surface,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 15,
+                          : null,
+                      child: const Text(
+                        'Đặt hàng',
+                        style: TextStyle(
+                          color: AppColors.surface,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                        ),
                       ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        },
+      ),
     );
   }
 }

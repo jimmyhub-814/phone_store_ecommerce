@@ -342,8 +342,6 @@ class _NotificationPageState extends State<NotificationPage>
                     ),
                   ),
                 ),
-
-                // ✅ Vùng tap phải (arrow) → mở rộng + đọc
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
@@ -369,8 +367,6 @@ class _NotificationPageState extends State<NotificationPage>
               ],
             ),
           ),
-
-          // ✅ Phần mở rộng
           if (isExpanded && others.isNotEmpty) ...[
             Divider(
               height: 1,

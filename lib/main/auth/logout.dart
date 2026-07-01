@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; 
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:phone_store/app_constants/app_colors.dart'; 
+import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -59,7 +59,7 @@ class _LogOutDialogState extends State<LogOutDialog> {
                   children: [
                     TextButton(
                       onPressed: () {
-                         Get.back(); 
+                        Get.back();
                       },
                       child: const Text('HỦY'),
                     ),
@@ -68,9 +68,9 @@ class _LogOutDialogState extends State<LogOutDialog> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                       ),
-                    onPressed: () async { 
+                      onPressed: () async {
                         Get.back();
- 
+
                         Get.dialog(
                           Center(
                             child: LoadingAnimationWidget.waveDots(
@@ -84,9 +84,9 @@ class _LogOutDialogState extends State<LogOutDialog> {
                         try {
                           await context.read<UserProvider>().signOut();
                           await GoogleSignIn().signOut();
-                        } finally { 
+                        } finally {
                           if (Get.isDialogOpen ?? false) Get.back();
-                        } 
+                        }
                       },
                       child: const Text(
                         'Đăng xuất',

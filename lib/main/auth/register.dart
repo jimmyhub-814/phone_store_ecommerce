@@ -1,11 +1,10 @@
-import 'dart:ui'; 
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/app_constants/app_utils.dart';
 import 'package:phone_store/main/auth/login.dart';
-import 'package:phone_store/provider/auth_provider.dart'; 
+import 'package:phone_store/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -44,7 +43,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: Image.asset('assets/img/authBackground.jpg', fit: BoxFit.cover),
+              child: Image.asset('assets/img/authBackground.jpg',
+                  fit: BoxFit.cover),
             ),
             Positioned.fill(
               child: Container(
@@ -69,7 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Form(
                     key: _formKey,
                     child: Column(
-                      children: [ 
+                      children: [
                         IntlPhoneField(
                           controller: _phoneController,
                           initialCountryCode: 'VN',
@@ -136,9 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             print(phone.completeNumber);
                           },
                         ),
-
                         const SizedBox(height: 25),
-
                         Align(
                           alignment: Alignment.center,
                           child: Container(

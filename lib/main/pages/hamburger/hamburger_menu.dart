@@ -22,7 +22,7 @@ class _HamburgerBarState extends State<HamburgerBar> {
         color: AppColors.textSecondary,
         child: Column(
           children: [
-            Image.asset( 
+            Image.asset(
               'assets/logo/fulllogo1.png',
               height: 180,
             ),

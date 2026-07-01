@@ -32,205 +32,227 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: context.read<OrderProvider>().getUserOrder(widget.orderId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: LoadingAnimationWidget.waveDots(
-              color: AppColors.primary,
-              size: 60,
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          print('Lỗi tải');
-          return const Center(
-            child: Text(
-              'Chưa có bất kì đánh giá nào!',
-            ),
-          );
-        }
-
-        final order = snapshot.data!;
-        for (var item in order.orderProduct) {
-          feedbackControllers[item.variantsId] = TextEditingController();
-          votes[item.variantsId] = 5;
-        }
-        return Scaffold(
-          backgroundColor: AppColors.surface,
-          appBar: AppBar(
-            leading: AppbarIcon(),
-            backgroundColor: AppColors.surface,
-            title: const Text("Đánh giá sản phẩm"),
-            centerTitle: true,
-            actions: [
-              TextButton(
-                onPressed: () {
-                  votes.forEach((productId, rating) {
-                    final feedbackText =
-                        feedbackControllers[productId]?.text ?? '';
-
-                    final orderProduct = order.orderProduct.firstWhere(
-                      (p) => p.variantsId == productId,
-                    );
-                    String id = '${order.id}_${orderProduct.variantsId}';
-                    final feedB = FeedBack(
-                        id: id,
-                        userId: order.userInfo.userId,
-                        userName: order.userInfo.userName,
-                        userAvatar: order.userInfo.userAvatar,
-                        variantName: orderProduct.variantsName,
-                        vote: rating,
-                        variantImage: orderProduct.phoneImage,
-                        feedBackText: feedbackText.trim(),
-                        time: Timestamp.now());
-                    context
-                        .read<ProductProvider>()
-                        .uploadFeedBackOrder(orderProduct.id, feedB, id);
-                  });
-                  context
-                      .read<OrderProvider>()
-                      .updateOrder(order.id, OrderStatus.reviewed.name);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Phản hồi đã được gửi!"),
-                    ),
-                  );
-                  Future.delayed(const Duration(seconds: 2000));
-                  Navigator.pop(context);
-                },
-                child: const Text("Gửi"),
-              ),
-            ],
+    return Scaffold(
+      backgroundColor: AppColors.lightBorder,
+      appBar: AppBar(
+        leading: AppbarIcon(),
+        backgroundColor: AppColors.lightBorder,
+        title: const Text(
+          'Đánh giá sản phẩm',
+          style: TextStyle(
+            color: AppColors.primary,
+            fontSize: 19,
+            fontWeight: FontWeight.w600,
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                ...order.orderProduct.map(
-                  (item) {
-                    final List<ValueNotifier<bool>> isTrue =
-                        List.generate(5, (_) => ValueNotifier<bool>(true));
+        ),
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+          future: context.read<OrderProvider>().getUserOrder(widget.orderId),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: LoadingAnimationWidget.waveDots(
+                  color: AppColors.primary,
+                  size: 60,
+                ),
+              );
+            }
 
-                    return Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          )
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: SafeImage(
-                                  url: item.phoneImage,
-                                  width: 55,
-                                  height: 55,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  item.phoneName,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.3,
+            if (snapshot.hasError) {
+              print('Lỗi tải');
+              return const Center(
+                child: Text(
+                  'Chưa có bất kì đánh giá nào!',
+                ),
+              );
+            }
+
+            final order = snapshot.data!;
+
+            for (var item in order.orderProduct) {
+              feedbackControllers[item.variantsId] = TextEditingController();
+              votes[item.variantsId] = 5;
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  ...order.orderProduct.map(
+                    (item) {
+                      final List<ValueNotifier<bool>> isTrue =
+                          List.generate(5, (_) => ValueNotifier<bool>(true));
+
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            )
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: SafeImage(
+                                    url: item.phoneImage,
+                                    width: 55,
+                                    height: 55,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 15),
-                          const Text(
-                            "Đánh giá sản phẩm",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    item.phoneName,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              ...List.generate(
-                                5,
-                                (index) => ValueListenableBuilder(
-                                  valueListenable: isTrue[index],
-                                  builder: (context, value, child) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        for (int i = 0;
-                                            i < isTrue.length;
-                                            i++) {
-                                          isTrue[i].value = i <= index;
-                                        }
-                                        votes[item.variantsId] = index + 1;
-                                      },
-                                      child: AnimatedScale(
-                                        scale: value ? 1.15 : 1.0,
-                                        duration:
-                                            const Duration(milliseconds: 150),
-                                        child: Icon(
-                                          Icons.star_rounded,
-                                          color: value
-                                              ? AppColors.star
-                                              : Colors.grey.shade400,
-                                          size: 32,
+                            const SizedBox(height: 15),
+                            const Text(
+                              "Đánh giá sản phẩm",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                ...List.generate(
+                                  5,
+                                  (index) => ValueListenableBuilder(
+                                    valueListenable: isTrue[index],
+                                    builder: (context, value, child) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          for (int i = 0;
+                                              i < isTrue.length;
+                                              i++) {
+                                            isTrue[i].value = i <= index;
+                                          }
+                                          votes[item.variantsId] = index + 1;
+                                        },
+                                        child: AnimatedScale(
+                                          scale: value ? 1.15 : 1.0,
+                                          duration:
+                                              const Duration(milliseconds: 150),
+                                          child: Icon(
+                                            Icons.star_rounded,
+                                            color: value
+                                                ? AppColors.star
+                                                : Colors.grey.shade400,
+                                            size: 32,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                    color: Colors.grey.shade300, width: 1),
+                              ),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: TextField(
+                                controller:
+                                    feedbackControllers[item.variantsId],
+                                maxLength: 100,
+                                maxLines: 4,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Chia sẻ cảm nhận của bạn…",
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 15),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Colors.grey.shade300, width: 1),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: TextField(
-                              controller: feedbackControllers[item.variantsId],
-                              maxLength: 100,
-                              maxLines: 4,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Chia sẻ cảm nhận của bạn…",
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: AppColors.primaryDark,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        );
-      },
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                    ),
+                    onPressed: () {
+                      votes.forEach((productId, rating) {
+                        final feedbackText =
+                            feedbackControllers[productId]?.text ?? '';
+
+                        final orderProduct = order.orderProduct.firstWhere(
+                          (p) => p.variantsId == productId,
+                        );
+                        String id = '${order.id}_${orderProduct.variantsId}';
+                        final feedB = FeedBack(
+                            id: id,
+                            userId: order.userInfo.userId,
+                            userName: order.userInfo.userName,
+                            userAvatar: order.userInfo.userAvatar,
+                            variantName: orderProduct.variantsName,
+                            vote: rating,
+                            variantImage: orderProduct.phoneImage,
+                            feedBackText: feedbackText.trim(),
+                            time: Timestamp.now());
+                        context
+                            .read<ProductProvider>()
+                            .uploadFeedBackOrder(orderProduct.id, feedB, id);
+                      });
+                      context
+                          .read<OrderProvider>()
+                          .updateOrder(order.id, OrderStatus.reviewed.name);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Phản hồi đã được gửi!"),
+                        ),
+                      );
+
+                      Future.delayed(const Duration(seconds: 2000));
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Gửi",
+                      style: TextStyle(
+                        color: AppColors.surface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
     );
   }
 }

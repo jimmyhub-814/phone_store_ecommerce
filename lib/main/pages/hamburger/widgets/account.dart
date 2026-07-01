@@ -269,9 +269,7 @@ class _AccountPageState extends State<AccountPage> {
                       barrierColor: Colors.black.withValues(alpha: 0.6),
                       builder: (_) => const LogOutDialog(),
                     );
-                    if (mounted) {
-                 
-                    }
+                    if (mounted) {}
                   },
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

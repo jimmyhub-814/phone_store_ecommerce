@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
+
 class CancelOrderPage extends StatelessWidget {
   const CancelOrderPage({super.key});
   static const routeName = '/cancel-order';
@@ -17,7 +18,7 @@ class CancelOrderPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha:0.12),
+                  color: AppColors.primary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -27,7 +28,6 @@ class CancelOrderPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
               const Text(
                 'Hủy đơn thành công',
                 style: TextStyle(
@@ -37,7 +37,6 @@ class CancelOrderPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-
               Text(
                 'Đơn hàng của bạn đã được hủy. Chúng tôi luôn sẵn sàng hỗ trợ nếu bạn cần thêm thông tin.',
                 textAlign: TextAlign.center,
@@ -48,7 +47,6 @@ class CancelOrderPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 35),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

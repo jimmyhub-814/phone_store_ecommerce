@@ -8,7 +8,7 @@ import 'package:equatable/equatable.dart';
 
 class GeminiAIState extends Equatable {
   final bool isTyping;
-  final bool isStopped; 
+  final bool isStopped;
   final List<AIModel> messageList;
 
   const GeminiAIState({
@@ -68,14 +68,14 @@ class AIModelCubit extends Cubit<GeminiAIState> {
     if (state.isTyping) return;
     emit(state.copyWith(isTyping: true, isStopped: false));
 
-    try { 
+    try {
       final userMsg = AIModel(
         id: const Uuid().v4(),
         message: message,
         time: DateTime.now().millisecondsSinceEpoch,
         isUser: true,
       );
- 
+
       final AIModel aiMsg = AIModel(
         id: const Uuid().v4(),
         message: "",
@@ -89,7 +89,7 @@ class AIModelCubit extends Cubit<GeminiAIState> {
         ..add(aiMsg);
 
       emit(state.copyWith(messageList: listWithLoading));
- 
+
       final aiText = await ApiHelper().sendMsgApi(msg: message);
       if (state.isStopped) return;
 
@@ -98,7 +98,7 @@ class AIModelCubit extends Cubit<GeminiAIState> {
 
       final listReady = List<AIModel>.from(state.messageList);
       emit(state.copyWith(messageList: listReady));
- 
+
       _sub = fakeStreamFromText(aiText).listen(
         (chunk) {
           if (state.isStopped) return;

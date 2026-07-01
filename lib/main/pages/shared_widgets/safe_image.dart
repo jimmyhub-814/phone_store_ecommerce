@@ -28,7 +28,7 @@ class SafeImage extends StatelessWidget {
 
   Widget _buildImage(String? resolvedUrl) {
     if (resolvedUrl == null || resolvedUrl.isEmpty) {
-      return  _shimmerPlaceholder();
+      return _shimmerPlaceholder();
     }
 
     if (resolvedUrl.startsWith("http")) {
@@ -47,7 +47,7 @@ class SafeImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-      errorBuilder: (_, __, ___) =>  _shimmerPlaceholder(),
+      errorBuilder: (_, __, ___) => _shimmerPlaceholder(),
     );
   }
 
@@ -58,7 +58,7 @@ class SafeImage extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
-     color: Colors.black,
+        color: Colors.black,
       ),
     );
   }

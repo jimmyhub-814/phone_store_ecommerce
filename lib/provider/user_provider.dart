@@ -15,13 +15,13 @@ class UserProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  StreamSubscription<User?>? _authSubscription;  
-  
+  StreamSubscription<User?>? _authSubscription;
+
   UserProvider() {
     _authSubscription =
         FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
       if (firebaseUser != null) {
-        getUserInfo(); 
+        getUserInfo();
       } else {
         _user = null;
         _isLoading = false;

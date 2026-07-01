@@ -41,13 +41,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
   bool isGoogle = false;
   bool isPhone = false;
 
-  void _fillControllers(UserApp user) {
-    _fullNameController.text = user.userName;
-    _userAccountController.text = user.userAccount;
-    _dateController.text = user.userDate;
-    _genderController.text = user.userGender;
-  }
-
   @override
   void initState() {
     super.initState();
@@ -63,6 +56,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
         .any((p) => p.providerId == 'google.com');
     isPhone = AuthHelper.currentUser!.providerData
         .any((p) => p.providerId == 'phone');
+  }
+
+  void _fillControllers(UserApp user) {
+    _fullNameController.text = user.userName;
+    _userAccountController.text = user.userAccount;
+    _dateController.text = user.userDate;
+    _genderController.text = user.userGender;
   }
 
   Future<String> uploadAvatar(String filePath) async {
@@ -118,10 +118,94 @@ class _UserInfoPageState extends State<UserInfoPage> {
     }
   }
 
-  bool isValidEmail(String email) {
-    return RegExp(
-      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-    ).hasMatch(email);
+  void _handleEditToggle(bool edit, UserApp user) {
+    final hasChanges = _fullNameController.text != user.userName ||
+        _userAccountController.text != user.userAccount ||
+        _dateController.text != user.userDate ||
+        _genderController.text != user.userGender ||
+        _pickedImage != null;
+
+    if (edit && hasChanges) {
+      showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            'Lưu thay đổi?',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: const Text('Thông tin của bạn sẽ được cập nhật.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () async {
+                Navigator.pop(dialogContext);
+                isEditMode.value = false;
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (_) => Center(
+                    child: Center(
+                      child: LoadingAnimationWidget.waveDots(
+                        color: AppColors.primary,
+                        size: 60,
+                      ),
+                    ),
+                  ),
+                );
+
+                try {
+                  await updateInfo(user);
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Row(
+                        children: [
+                          Icon(Icons.check_circle, color: AppColors.surface),
+                          SizedBox(width: 8),
+                          Text('Lưu thông tin thành công!'),
+                        ],
+                      ),
+                      backgroundColor: AppColors.primary,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  if (!mounted) return;
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('$e'),
+                    ),
+                  );
+                }
+              },
+              child: const Text(
+                'Lưu',
+                style: TextStyle(color: AppColors.surface),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      isEditMode.value = !edit;
+    }
   }
 
   void changeType(BuildContext context, String type) {
@@ -325,22 +409,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
     }
   }
 
-  Widget _genderOption(BuildContext context, String gender) {
-    return InkWell(
-      onTap: () => Navigator.pop(context, gender),
-      splashColor: AppColors.primary.withValues(alpha: 0.2),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        alignment: Alignment.center,
-        child: Text(
-          gender,
-          style: const TextStyle(fontSize: 16),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -370,6 +438,22 @@ class _UserInfoPageState extends State<UserInfoPage> {
     );
   }
 
+  Widget _genderOption(BuildContext context, String gender) {
+    return InkWell(
+      onTap: () => Navigator.pop(context, gender),
+      splashColor: AppColors.primary.withValues(alpha: 0.2),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        alignment: Alignment.center,
+        child: Text(
+          gender,
+          style: const TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSliverAppBar(UserApp user) {
     return SliverAppBar(
       expandedHeight: 200,
@@ -378,32 +462,57 @@ class _UserInfoPageState extends State<UserInfoPage> {
         background: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1A1A2E), AppColors.primary],
+              colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E), AppColors.primary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
+              stops: [0.0, 0.4, 1.0],
             ),
           ),
           child: SafeArea(
             child: Stack(
               children: [
                 Positioned(
-                  top: -20,
-                  right: -30,
+                  top: -40,
+                  right: -40,
                   child: Container(
-                    width: 140,
-                    height: 140,
+                    width: 180,
+                    height: 180,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.surface.withValues(alpha: 0.05),
+                      color: AppColors.primary.withValues(alpha: 0.12),
                     ),
                   ),
                 ),
                 Positioned(
-                  bottom: 20,
-                  left: -20,
+                  top: 20,
+                  right: 20,
                   child: Container(
-                    width: 100,
-                    height: 100,
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.surface.withValues(alpha: 0.04),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: -20,
+                  left: -30,
+                  child: Container(
+                    width: 130,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.primary.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 30,
+                  left: 40,
+                  child: Container(
+                    width: 50,
+                    height: 50,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColors.surface.withValues(alpha: 0.04),
@@ -424,57 +533,118 @@ class _UserInfoPageState extends State<UserInfoPage> {
                                 }
                               }
                             : null,
-                        child: Stack(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.surface,
-                                  width: 3,
+                            const SizedBox(
+                              height: 45,
+                            ),
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Container(
+                                  width: 96,
+                                  height: 96,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.surface
+                                          .withValues(alpha: 0.9),
+                                      width: 3,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primary
+                                            .withValues(alpha: 0.5),
+                                        blurRadius: 24,
+                                        spreadRadius: 2,
+                                      ),
+                                      BoxShadow(
+                                        color:
+                                            Colors.black.withValues(alpha: 0.3),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipOval(
+                                    child: SafeImage(
+                                      url: _pickedImage ?? user.userAvatar,
+                                      width: 96,
+                                      height: 96,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primary
-                                        .withValues(alpha: 0.4),
-                                    blurRadius: 20,
-                                    spreadRadius: 4,
+                                if (edit)
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      width: 30,
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: AppColors.surface,
+                                          width: 2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black
+                                                .withValues(alpha: 0.2),
+                                            blurRadius: 6,
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(
+                                        Icons.camera_alt_rounded,
+                                        color: AppColors.surface,
+                                        size: 14,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.surface.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color:
+                                      AppColors.surface.withValues(alpha: 0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.fingerprint_rounded,
+                                    size: 12,
+                                    color: AppColors.surface
+                                        .withValues(alpha: 0.6),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${AuthHelper.userId?.substring(0, 8) ?? '—'}...',
+                                    style: TextStyle(
+                                      color: AppColors.surface
+                                          .withValues(alpha: 0.7),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                                 ],
                               ),
-                              child: ClipOval(
-                                child: SafeImage(
-                                  url: _pickedImage ?? user.userAvatar,
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
                             ),
-                            if (edit)
-                              Positioned(
-                                bottom: 2,
-                                right: 2,
-                                child: Container(
-                                  width: 28,
-                                  height: 28,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: AppColors.surface,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.camera_alt,
-                                    color: AppColors.surface,
-                                    size: 14,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                       );
@@ -488,8 +658,11 @@ class _UserInfoPageState extends State<UserInfoPage> {
       ),
       backgroundColor: const Color(0xFF1A1A2E),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new,
-            color: AppColors.surface, size: 18),
+        icon: const Icon(
+          Icons.arrow_back_ios_new,
+          color: AppColors.surface,
+          size: 18,
+        ),
         onPressed: () => Navigator.pop(context),
       ),
       title: const Text(
@@ -535,96 +708,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
         ),
       ],
     );
-  }
-
-  void _handleEditToggle(bool edit, UserApp user) {
-    final hasChanges = _fullNameController.text != user.userName ||
-        _userAccountController.text != user.userAccount ||
-        _dateController.text != user.userDate ||
-        _genderController.text != user.userGender ||
-        _pickedImage != null;
-
-    if (edit && hasChanges) {
-      showDialog(
-        context: context,
-        builder: (dialogContext) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: const Text(
-            'Lưu thay đổi?',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: const Text('Thông tin của bạn sẽ được cập nhật.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Hủy'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: () async {
-                Navigator.pop(dialogContext);
-                isEditMode.value = false;
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (_) => Center(
-                    child: Center(
-                      child: LoadingAnimationWidget.waveDots(
-                        color: AppColors.primary,
-                        size: 60,
-                      ),
-                    ),
-                  ),
-                );
-
-                try {
-                  await updateInfo(user);
-                  if (!mounted) return;
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Row(
-                        children: [
-                          Icon(Icons.check_circle, color: AppColors.surface),
-                          SizedBox(width: 8),
-                          Text('Lưu thông tin thành công!'),
-                        ],
-                      ),
-                      backgroundColor: AppColors.primary,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
-                } catch (e) {
-                  if (!mounted) return;
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('$e'),
-                    ),
-                  );
-                }
-              },
-              child: const Text(
-                'Lưu',
-                style: TextStyle(color: AppColors.surface),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      isEditMode.value = !edit;
-    }
   }
 
   Widget _buildInfoSection(UserApp user) {
