@@ -9,16 +9,18 @@ import 'package:phone_store/models/order.dart';
 import 'package:phone_store/provider/order_provider.dart';
 import 'package:provider/provider.dart';
 
-class DetailOrder extends StatefulWidget {
+class OrderDetail extends StatefulWidget {
+  static const routeName = '/order-detail';
+
   final String orderId;
-  const DetailOrder({super.key, required this.orderId});
-  static const routeName = '/orderDetail';
+
+  const OrderDetail({super.key, required this.orderId});
 
   @override
-  State<DetailOrder> createState() => _DetailOrderState();
+  State<OrderDetail> createState() => _OrderDetailState();
 }
 
-class _DetailOrderState extends State<DetailOrder> {
+class _OrderDetailState extends State<OrderDetail> {
   bool expandedAddress = false;
   late Future _orderFuture;
 

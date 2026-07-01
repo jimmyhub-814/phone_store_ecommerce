@@ -9,7 +9,7 @@ import 'package:phone_store/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
-  static const routeName = '/login-page';
+  static const routeName = '/login';
 
   const LoginPage({super.key});
 

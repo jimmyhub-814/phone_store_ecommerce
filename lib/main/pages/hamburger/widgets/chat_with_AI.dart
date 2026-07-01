@@ -9,6 +9,7 @@ import 'package:phone_store/models/AI.dart';
 
 class ChatAI extends StatefulWidget {
   static const routeName = '/gemini-AI';
+  
   const ChatAI({super.key});
 
   @override

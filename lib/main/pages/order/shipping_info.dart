@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/main/pages/order/change_order_info.dart';
+import 'package:phone_store/main/pages/order/change_shipping_info.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/models/user.dart';
 import 'package:phone_store/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
-class ShippingInfoPage extends StatefulWidget {
-  static const String routeName = '/shipping-info-page';
+class ShippingInfoScreen extends StatefulWidget {
+  static const String routeName = '/shipping-info';
 
-  const ShippingInfoPage({super.key});
+  const ShippingInfoScreen({super.key});
 
   @override
-  State<ShippingInfoPage> createState() => _ShippingInfoPageState();
+  State<ShippingInfoScreen> createState() => _ShippingInfoScreenState();
 }
 
-class _ShippingInfoPageState extends State<ShippingInfoPage> {
+class _ShippingInfoScreenState extends State<ShippingInfoScreen> {
   late TextEditingController addressController;
   late TextEditingController nameController;
   late TextEditingController phoneController;

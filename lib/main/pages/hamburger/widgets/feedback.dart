@@ -11,9 +11,12 @@ import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 import 'package:provider/provider.dart';
 
 class FeedbackScreen extends StatefulWidget {
+  static const routeName = "/feedback";
+
   final String orderId;
+  
   const FeedbackScreen({super.key, required this.orderId});
-  static const routeName = "/feedbackScreen";
+
   @override
   State<FeedbackScreen> createState() => _FeedbackScreenState();
 }

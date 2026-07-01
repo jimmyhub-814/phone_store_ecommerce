@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
+import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/main/pages/shared_widgets/custom_card.dart';
 import 'package:phone_store/models/products.dart';
 import 'package:phone_store/provider/favorite_provider.dart';
@@ -9,6 +10,8 @@ import 'package:phone_store/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
 class FavoritePage extends StatefulWidget {
+  static const routeName = "/favorite";
+
   const FavoritePage({super.key});
 
   @override
@@ -24,32 +27,15 @@ class _FavoritePageState extends State<FavoritePage> {
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
+        leading: AppbarIcon(),
         centerTitle: true,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () {
-                Scaffold.of(context).openDrawer();
-              },
-              child: const Icon(
-                Icons.menu_open_outlined,
-                color: AppColors.textPrimary,
-                size: 22,
-              ),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            const Text(
-              'Yêu thích',
-              style: TextStyle(
-                fontSize: 20,
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
+        title: const Text(
+          'Yêu thích',
+          style: TextStyle(
+            fontSize: 20,
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       body: Consumer<FavoriteProvider>(

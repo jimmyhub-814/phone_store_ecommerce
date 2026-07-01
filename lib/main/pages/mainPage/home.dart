@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/cubit/conversation_cubit.dart';
 import 'package:phone_store/main/pages/hamburger/hamburger_menu.dart';
-import 'package:phone_store/main/pages/mainPage/chat_with_seller.dart';
 import 'package:phone_store/main/pages/mainPage/best_seller_item.dart';
 import 'package:phone_store/main/pages/mainPage/big_carousel.dart';
-import 'package:phone_store/main/pages/mainPage/cart_page.dart';
+import 'package:phone_store/main/pages/mainPage/cart.dart';
 import 'package:phone_store/main/pages/mainPage/category_item.dart';
+import 'package:phone_store/main/pages/mainPage/chat_with_seller.dart';
 import 'package:phone_store/main/pages/mainPage/search_bar.dart';
 import 'package:phone_store/models/conversation.dart';
 import 'package:phone_store/provider/category_provider.dart';
 import 'package:phone_store/provider/product_provider.dart';
 
 class HomePage extends StatefulWidget {
-  static const routeName = '/home-screen';
+  static const routeName = '/home';
+  
   const HomePage({super.key});
 
   @override
@@ -162,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                               );
 
                               Navigator.pushNamed(
-                                  context, MessagePage.routeName);
+                                  context, ChatScreen.routeName);
                             },
                             child: BlocBuilder<ConversationCubit,
                                 ConversationState>(

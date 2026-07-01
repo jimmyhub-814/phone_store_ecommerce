@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
-import 'package:phone_store/main/auth/complete_profile_page.dart';
+import 'package:phone_store/main/auth/profile_setup.dart'; 
 import 'package:phone_store/main/auth/login.dart';
-import 'package:phone_store/main/pages/mainPage/home_page.dart';
+import 'package:phone_store/main/pages/mainPage/home.dart';
 import 'package:phone_store/models/user.dart';
 
 class AuthGate extends StatefulWidget {
@@ -65,7 +65,7 @@ class _AuthGateState extends State<AuthGate> {
             final doc = snap.data;
 
             if (doc == null || !doc.exists) {
-              return CompleteProfilePage(
+              return ProfileSetup(
                 userId: user.uid,
                 userAccount: isGoogle ? user.email : user.phoneNumber ?? '',
               );
@@ -74,7 +74,7 @@ class _AuthGateState extends State<AuthGate> {
             final data = snap.data!.data() as Map<String, dynamic>?;
 
             if (data?[UserApp.isCompletedField] != true) {
-              return CompleteProfilePage(
+              return ProfileSetup(
                 userId: user.uid,
                 userAccount: isGoogle ? user.email : user.phoneNumber ?? '',
               );

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/main/pages/hamburger/widgets/policy_page.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/policy.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/app_constants/app_utils.dart';
 
 class SupportCenterPage extends StatelessWidget {
-  const SupportCenterPage({super.key});
-
   static const routeName = "/support-center";
+  
+  const SupportCenterPage({super.key});
 
   @override
   Widget build(BuildContext context) {

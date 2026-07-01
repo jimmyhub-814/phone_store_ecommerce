@@ -15,22 +15,23 @@ import 'package:phone_store/main/auth/login.dart';
 import 'package:phone_store/models/user.dart';
 import 'package:phone_store/services/notification_service.dart';
 
-class CompleteProfilePage extends StatefulWidget {
+class ProfileSetup extends StatefulWidget {
+  static const routeName = 'profile-setup';
+  
   final String userId;
   final String? userAccount;
-  static const routeName = 'complete-profile';
 
-  const CompleteProfilePage({
+  const ProfileSetup({
     super.key,
     required this.userId,
     this.userAccount,
   });
 
   @override
-  State<CompleteProfilePage> createState() => _CompleteProfilePageState();
+  State<ProfileSetup> createState() => _ProfileSetupState();
 }
 
-class _CompleteProfilePageState extends State<CompleteProfilePage> {
+class _ProfileSetupState extends State<ProfileSetup> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _dateController = TextEditingController();

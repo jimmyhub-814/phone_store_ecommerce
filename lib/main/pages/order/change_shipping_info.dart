@@ -12,11 +12,12 @@ import 'package:phone_store/provider/user_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class ChangeOrderInfo extends StatefulWidget {
+  static const String routeName = '/change-shipping-info';
+
   final String? id;
   final String? userPhone;
   final String? userName;
   final String? userAddress;
-  static const String routeName = '/changeOrderInfo';
 
   const ChangeOrderInfo(
       {super.key, this.id, this.userPhone, this.userAddress, this.userName});

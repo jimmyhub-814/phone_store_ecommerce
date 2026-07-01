@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
+
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/app_constants/app_utils.dart';
@@ -13,14 +16,14 @@ import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/app_constants/storages.dart';
 import 'package:phone_store/main/auth/login.dart';
+import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 import 'package:phone_store/models/user.dart';
 import 'package:phone_store/provider/user_provider.dart';
-import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
-import 'package:provider/provider.dart';
 
 class UserInfoPage extends StatefulWidget {
-  const UserInfoPage({super.key});
   static const routeName = '/user-info';
+  
+  const UserInfoPage({super.key});
 
   @override
   State<UserInfoPage> createState() => _UserInfoPageState();

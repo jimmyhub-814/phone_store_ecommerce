@@ -10,11 +10,14 @@ import 'package:phone_store/services/recommendation_product_service.dart';
 import 'package:provider/provider.dart';
 
 class CategoryPage extends StatefulWidget {
+  static const routeName = "/category";
+
   final String categoryId;
   final String categoryName;
+  
   const CategoryPage(
       {super.key, required this.categoryId, required this.categoryName});
-  static const routeName = "/category";
+
   @override
   State<CategoryPage> createState() => _CategoryPageState();
 }

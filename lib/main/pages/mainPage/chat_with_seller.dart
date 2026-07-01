@@ -1,37 +1,40 @@
 import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
+import 'package:phone_store/app_constants/app_utils.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/cubit/messages_cubit.dart';
+import 'package:phone_store/main/pages/mainPage/product_detail.dart';
 import 'package:phone_store/main/pages/order/checkout_order.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
+import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 import 'package:phone_store/models/message_model.dart';
 import 'package:phone_store/models/order.dart';
 import 'package:phone_store/models/products.dart';
-import 'package:phone_store/main/pages/mainPage/phone_profile.dart';
 import 'package:phone_store/models/variants.dart';
 import 'package:phone_store/provider/cart_provider.dart';
 import 'package:phone_store/provider/product_provider.dart';
-import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
-import 'package:phone_store/app_constants/app_utils.dart';
 
-class MessagePage extends StatefulWidget {
+class ChatScreen extends StatefulWidget {
+  static const routeName = '/chat';
+
   final Product? product;
   final ProductMessage? productMessage;
 
-  static const routeName = '/messagePage';
-  const MessagePage({super.key, this.product, this.productMessage});
+  const ChatScreen({super.key, this.product, this.productMessage});
 
   @override
-  State<MessagePage> createState() => _MessagePageState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _MessagePageState extends State<MessagePage> {
+class _ChatScreenState extends State<ChatScreen> {
   final chatController = TextEditingController();
   final userId = AuthHelper.userId;
   final ScrollController _scrollController = ScrollController();
@@ -205,7 +208,9 @@ class _MessagePageState extends State<MessagePage> {
                         const Text(
                           'Phân loại',
                           style: TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.w600),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         Wrap(
@@ -358,7 +363,9 @@ class _MessagePageState extends State<MessagePage> {
                           child: Text(
                             mode == 'cart' ? 'Thêm vào giỏ' : 'Mua ngay',
                             style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w600),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -730,8 +737,8 @@ class _MessagePageState extends State<MessagePage> {
                 ? GestureDetector(
                     onTap: () => Navigator.pushNamed(
                       context,
-                      PhoneProfilePage.routeName,
-                      arguments: PhoneProfilePage(id: msg.product!.productId),
+                      ProductDetail.routeName,
+                      arguments: ProductDetail(id: msg.product!.productId),
                     ),
                     child: Container(
                       margin: const EdgeInsets.only(bottom: 4),

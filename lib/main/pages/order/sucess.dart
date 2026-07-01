@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/main/pages/mainPage/home_page.dart';
+import 'package:phone_store/main/pages/mainPage/home.dart';
 
 class SuccessOrder extends StatelessWidget {
   static const routeName = '/success-order';
+  
   const SuccessOrder({super.key});
 
   @override

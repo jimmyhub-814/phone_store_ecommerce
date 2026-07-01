@@ -11,7 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
 class NotificationPage extends StatefulWidget {
-  static const routeName = '/notification-page';
+  static const routeName = '/notification';
+
   const NotificationPage({super.key});
 
   @override
@@ -271,8 +272,8 @@ class _NotificationPageState extends State<NotificationPage>
                       }
                       Navigator.pushNamed(
                         context,
-                        DetailOrder.routeName,
-                        arguments: DetailOrder(orderId: orderId),
+                        OrderDetail.routeName,
+                        arguments: OrderDetail(orderId: orderId),
                       );
                     },
                     child: Padding(
@@ -396,8 +397,8 @@ class _NotificationPageState extends State<NotificationPage>
       child: InkWell(
         onTap: () => Navigator.pushNamed(
           context,
-          DetailOrder.routeName,
-          arguments: DetailOrder(
+          OrderDetail.routeName,
+          arguments: OrderDetail(
             orderId: orderId,
           ),
         ),

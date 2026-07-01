@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/models/products.dart';
-import 'package:phone_store/main/pages/mainPage/phone_profile.dart';
+import 'package:phone_store/main/pages/mainPage/product_detail.dart';
 import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 
 class CustomCard extends StatelessWidget {
@@ -18,8 +18,8 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (() {
-        Navigator.pushNamed(context, PhoneProfilePage.routeName,
-            arguments: PhoneProfilePage(id: product.id));
+        Navigator.pushNamed(context, ProductDetail.routeName,
+            arguments: ProductDetail(id: product.id));
       }),
       child: Container(
         decoration: BoxDecoration(

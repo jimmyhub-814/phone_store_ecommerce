@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
@@ -10,10 +13,10 @@ import 'package:phone_store/main/pages/shared_widgets/custom_card.dart';
 import 'package:phone_store/models/products.dart';
 import 'package:phone_store/models/search_history.dart';
 import 'package:phone_store/provider/product_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class SearchPage extends StatefulWidget {
+  static const routeName = '/search-screen';
+  
   const SearchPage({super.key});
 
   @override

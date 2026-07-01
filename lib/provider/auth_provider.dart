@@ -5,7 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:phone_store/app_constants/app_utils.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
-import 'package:phone_store/main/auth/show_otp_dialog.dart';
+import 'package:phone_store/main/pages/shared_widgets/otp_dialog.dart';
 import 'dart:async';
 import 'package:phone_store/models/user.dart';
 

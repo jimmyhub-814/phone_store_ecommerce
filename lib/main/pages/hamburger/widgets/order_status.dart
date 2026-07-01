@@ -4,31 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/app_constants/app_textStyles.dart';
-import 'package:phone_store/app_constants/auth_helper.dart';
-import 'package:phone_store/app_constants/firestore_collections.dart';
-import 'package:phone_store/main/pages/order/cancel_order.dart';
-import 'package:phone_store/main/pages/order/order_detail.dart';
-import 'package:phone_store/main/pages/hamburger/widgets/feedback.dart';
-import 'package:phone_store/main/pages/mainPage/cart_page.dart';
-import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
-import 'package:phone_store/models/feedback.dart';
-import 'package:phone_store/models/notifications.dart';
-import 'package:phone_store/models/order.dart';
-import 'package:phone_store/main/pages/order/checkout_order.dart';
-import 'package:phone_store/provider/cart_provider.dart';
-import 'package:phone_store/provider/order_provider.dart';
-import 'package:phone_store/provider/product_provider.dart';
-import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:phone_store/app_constants/app_colors.dart';
+import 'package:phone_store/app_constants/app_textStyles.dart';
+import 'package:phone_store/app_constants/auth_helper.dart';
+import 'package:phone_store/app_constants/firestore_collections.dart';
+import 'package:phone_store/main/pages/hamburger/widgets/feedback.dart';
+import 'package:phone_store/main/pages/mainPage/cart.dart';
+import 'package:phone_store/main/pages/order/cancel_order.dart';
+import 'package:phone_store/main/pages/order/checkout_order.dart';
+import 'package:phone_store/main/pages/order/order_detail.dart';
+import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
+import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
+import 'package:phone_store/models/feedback.dart';
+import 'package:phone_store/models/notifications.dart';
+import 'package:phone_store/models/order.dart';
+import 'package:phone_store/provider/cart_provider.dart';
+import 'package:phone_store/provider/order_provider.dart';
+import 'package:phone_store/provider/product_provider.dart';
+
 class OrderStatusPage extends StatefulWidget {
+  static const routeName = '/order-status';
+
   final int index;
+
   const OrderStatusPage({super.key, required this.index});
-  static const routeName = '/order_status';
+
   @override
   State<OrderStatusPage> createState() => _OrderStatusPageState();
 }
@@ -445,8 +449,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
             onTap: () {
               Navigator.pushNamed(
                 context,
-                DetailOrder.routeName,
-                arguments: DetailOrder(orderId: order.id),
+                OrderDetail.routeName,
+                arguments: OrderDetail(orderId: order.id),
               );
             },
             child: Container(
@@ -762,8 +766,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
                                                   false,
                                             }, SetOptions(merge: true));
 
-                                            Navigator.pushNamed(context,
-                                                CancelOrderPage.routeName);
+                                            Navigator.pushNamed(
+                                                context, CancelOrder.routeName);
                                           } catch (e) {
                                             // Nếu lỗi thì unlock lại
                                             setState(() => _cancellingOrders
@@ -1006,8 +1010,8 @@ class _OrderStatusPageState extends State<OrderStatusPage>
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  DetailOrder.routeName,
-                  arguments: DetailOrder(orderId: allItems[index]['orderId']),
+                  OrderDetail.routeName,
+                  arguments: OrderDetail(orderId: allItems[index]['orderId']),
                 );
               },
               child: Container(

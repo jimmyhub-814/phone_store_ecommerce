@@ -8,7 +8,7 @@ import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
 import 'package:phone_store/main/pages/order/fail_to_order.dart';
-import 'package:phone_store/main/pages/order/shipping_info_page.dart';
+import 'package:phone_store/main/pages/order/shipping_info.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 import 'package:phone_store/models/notifications.dart';
@@ -23,10 +23,12 @@ import 'package:vnpay_flutter/vnpay_flutter.dart';
 import 'dart:async';
 
 class CheckoutOrder extends StatefulWidget {
+  static const routeName = '/checkout-order';
+
   final double totalPrice;
+
   final List<OrderProduct> orderProduct;
 
-  static const routeName = '/checkoutOrder';
   const CheckoutOrder(
       {super.key, required this.totalPrice, required this.orderProduct});
 
@@ -240,7 +242,7 @@ class _CheckoutOrderState extends State<CheckoutOrder> {
                         onTap: () async {
                           Navigator.pushNamed(
                             context,
-                            ShippingInfoPage.routeName,
+                            ShippingInfoScreen.routeName,
                           );
                         },
                         child: Container(
@@ -290,7 +292,7 @@ class _CheckoutOrderState extends State<CheckoutOrder> {
                                     : GestureDetector(
                                         onTap: () => Navigator.pushNamed(
                                           context,
-                                          ShippingInfoPage.routeName,
+                                          ShippingInfoScreen.routeName,
                                         ),
                                         child: const Text(
                                           'Vui lòng thêm thông tin nhận hàng!',

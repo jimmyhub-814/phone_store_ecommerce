@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/main/pages/mainPage/home_page.dart';
+import 'package:phone_store/main/pages/mainPage/home.dart';
 
 class FailOrder extends StatelessWidget {
   static const routeName = '/fail-to-order';
+
   const FailOrder({super.key});
 
   @override

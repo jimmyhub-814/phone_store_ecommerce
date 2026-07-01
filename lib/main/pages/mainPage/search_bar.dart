@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/main/pages/mainPage/search_page.dart';
+import 'package:phone_store/main/pages/mainPage/search_screen.dart';
 
 class SearchBarWidget extends StatefulWidget {
   const SearchBarWidget({super.key});

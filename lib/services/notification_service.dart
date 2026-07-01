@@ -151,7 +151,7 @@ class NotificationService {
 
       MyApp.navigatorKey.currentState?.push(
         MaterialPageRoute(
-          builder: (_) => DetailOrder(orderId: orderId),
+          builder: (_) => OrderDetail(orderId: orderId),
         ),
       );
     } catch (e) {

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:phone_store/app_constants/app_colors.dart';
-import 'package:phone_store/app_constants/app_textStyles.dart';
-import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
-import 'package:phone_store/models/cart.dart';
-import 'package:phone_store/main/pages/order/checkout_order.dart';
-import 'package:phone_store/models/order.dart';
-import 'package:phone_store/models/products.dart';
-import 'package:phone_store/provider/cart_provider.dart';
-import 'package:phone_store/main/pages/mainPage/phone_profile.dart';
-import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
-import 'package:phone_store/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'package:phone_store/app_constants/app_colors.dart';
+import 'package:phone_store/app_constants/app_textStyles.dart';
+import 'package:phone_store/main/pages/mainPage/product_detail.dart';
+import 'package:phone_store/main/pages/order/checkout_order.dart';
+import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
+import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
+import 'package:phone_store/models/cart.dart';
+import 'package:phone_store/models/order.dart';
+import 'package:phone_store/models/products.dart';
+import 'package:phone_store/provider/cart_provider.dart';
+import 'package:phone_store/provider/product_provider.dart';
+
 class CartPage extends StatefulWidget {
+  static const routeName = "/cart";
+
   const CartPage({super.key});
-  static const routeName = "/cart-screen";
+
   @override
   State<CartPage> createState() => _CartPageState();
 }
@@ -278,8 +281,8 @@ class _CartPageState extends State<CartPage> {
                                 onTap: () {
                                   Navigator.pushNamed(
                                     context,
-                                    PhoneProfilePage.routeName,
-                                    arguments: PhoneProfilePage(id: product.id),
+                                    ProductDetail.routeName,
+                                    arguments: ProductDetail(id: product.id),
                                   );
                                 },
                                 child: Container(

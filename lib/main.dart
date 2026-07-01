@@ -30,6 +30,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:phone_store/main/pages/favorite/favorite.dart';
 import 'package:provider/provider.dart';
 
 // ===============================
@@ -76,16 +77,16 @@ import 'package:phone_store/cubit/messages_cubit.dart';
 // ===============================
 import 'package:phone_store/main/auth/auth_gate.dart';
 import 'package:phone_store/main/auth/login.dart';
-import 'package:phone_store/main/auth/complete_profile_page.dart';
+import 'package:phone_store/main/auth/profile_setup.dart';
 
 // ===============================
 // MAIN PAGES (HOME / NAVIGATION)
 // ===============================
-import 'package:phone_store/main/pages/mainPage/home_page.dart';
+import 'package:phone_store/main/pages/mainPage/home.dart';
 import 'package:phone_store/main/pages/mainPage/category.dart';
-import 'package:phone_store/main/pages/mainPage/search_page.dart';
-import 'package:phone_store/main/pages/mainPage/cart_page.dart';
-import 'package:phone_store/main/pages/mainPage/phone_profile.dart';
+import 'package:phone_store/main/pages/mainPage/search_screen.dart';
+import 'package:phone_store/main/pages/mainPage/cart.dart';
+import 'package:phone_store/main/pages/mainPage/product_detail.dart';
 
 // ===============================
 // ORDER FLOW PAGES
@@ -95,8 +96,8 @@ import 'package:phone_store/main/pages/order/order_detail.dart';
 import 'package:phone_store/main/pages/order/sucess.dart';
 import 'package:phone_store/main/pages/order/fail_to_order.dart';
 import 'package:phone_store/main/pages/order/cancel_order.dart';
-import 'package:phone_store/main/pages/order/change_order_info.dart';
-import 'package:phone_store/main/pages/order/shipping_info_page.dart';
+import 'package:phone_store/main/pages/order/change_shipping_info.dart';
+import 'package:phone_store/main/pages/order/shipping_info.dart';
 
 // ===============================
 // HAMBURGER MENU / USER FEATURES
@@ -389,19 +390,20 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => const AuthGate(),
-        '/login-page': (context) => const LoginPage(),
-        '/home-screen': (context) => const HomePage(),
+        '/login': (context) => const LoginPage(),
+        '/home': (context) => const HomePage(),
         '/support-center': (context) => const SupportCenterPage(),
         '/account': (context) => const AccountPage(),
         '/user-info': (context) => const UserInfoPage(),
-        '/cart-screen': (context) => const CartPage(),
-        '/search-page': (context) => const SearchPage(),
+        '/cart': (context) => const CartPage(),
+        '/search-screen': (context) => const SearchPage(),
         '/fail-to-order': (context) => const FailOrder(),
-        '/cancel-order': (context) => const CancelOrderPage(),
+        '/cancel-order': (context) => const CancelOrder(),
         '/gemini-AI': (context) => const ChatAI(),
         '/success-order': (context) => const SuccessOrder(),
-        '/shipping-info-page': (context) => const ShippingInfoPage(),
-        '/notification-page': (context) => const NotificationPage(),
+        '/shipping-info': (context) => const ShippingInfoScreen(),
+        '/notification': (context) => const NotificationPage(),
+        '/favorite': (context) => const FavoritePage(),
       },
       onGenerateRoute: (settings) {
         switch (settings.name) {
@@ -415,29 +417,29 @@ class _MyAppState extends State<MyApp> {
               ),
             );
 
-          case MessagePage.routeName:
-            final args = settings.arguments as MessagePage?;
+          case ChatScreen.routeName:
+            final args = settings.arguments as ChatScreen?;
 
             return MaterialPageRoute(
-              builder: (context) => MessagePage(
+              builder: (context) => ChatScreen(
                 product: args?.product,
                 productMessage: args?.productMessage,
               ),
             );
-          case CompleteProfilePage.routeName:
-            final args = settings.arguments as CompleteProfilePage;
+          case ProfileSetup.routeName:
+            final args = settings.arguments as ProfileSetup;
 
             return MaterialPageRoute(
-              builder: (context) => CompleteProfilePage(
+              builder: (context) => ProfileSetup(
                 userId: args.userId,
                 userAccount: args.userAccount,
               ),
             );
-          case DetailOrder.routeName:
-            final args = settings.arguments as DetailOrder;
+          case OrderDetail.routeName:
+            final args = settings.arguments as OrderDetail;
 
             return MaterialPageRoute(
-              builder: (context) => DetailOrder(
+              builder: (context) => OrderDetail(
                 orderId: args.orderId,
               ),
             );
@@ -461,11 +463,11 @@ class _MyAppState extends State<MyApp> {
                 userAddress: args?.userAddress,
               ),
             );
-          case PhoneProfilePage.routeName:
-            final args = settings.arguments as PhoneProfilePage;
+          case ProductDetail.routeName:
+            final args = settings.arguments as ProductDetail;
 
             return MaterialPageRoute(
-              builder: (context) => PhoneProfilePage(
+              builder: (context) => ProductDetail(
                 id: args.id,
               ),
             );

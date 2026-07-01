@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/app_textStyles.dart';
 import 'package:phone_store/main/auth/logout.dart';
+import 'package:phone_store/main/pages/favorite/favorite.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/account.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/support.dart';
 import 'package:phone_store/main/pages/hamburger/widgets/chat_with_AI.dart';
@@ -44,6 +45,14 @@ class _HamburgerBarState extends State<HamburgerBar> {
                     icon: Icons.message_rounded,
                     onTap: () {
                       Navigator.pushNamed(context, NotificationPage.routeName);
+                    },
+                  ),
+                  _menuItem(
+                    context,
+                    title: "Yêu thích",
+                    icon: Icons.favorite_rounded,
+                    onTap: () {
+                      Navigator.pushNamed(context, FavoritePage.routeName);
                     },
                   ),
                   _menuItem(

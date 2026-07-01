@@ -34,8 +34,6 @@ class OrderProvider extends ChangeNotifier {
 
           temp.add(UserOrder.fromMap(data));
         } catch (e) {
-          print("❌ DOC LỖI: ${doc.id}");
-          print("DATA: ${doc.data()}");
           print("ERROR: $e");
         }
       }

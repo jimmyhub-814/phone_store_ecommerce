@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 
 class AccountPage extends StatefulWidget {
   static const routeName = '/account';
+  
   const AccountPage({super.key});
 
   @override

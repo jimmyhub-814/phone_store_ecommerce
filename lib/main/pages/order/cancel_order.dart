@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:phone_store/app_constants/app_colors.dart';
 
-class CancelOrderPage extends StatelessWidget {
-  const CancelOrderPage({super.key});
+class CancelOrder extends StatelessWidget {
   static const routeName = '/cancel-order';
+
+  const CancelOrder({super.key});
 
   @override
   Widget build(BuildContext context) {

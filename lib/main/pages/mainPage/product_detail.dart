@@ -2,38 +2,41 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:provider/provider.dart';
+
 import 'package:phone_store/app_constants/app_colors.dart';
 import 'package:phone_store/app_constants/auth_helper.dart';
 import 'package:phone_store/app_constants/firestore_collections.dart';
+import 'package:phone_store/main/pages/mainPage/cart.dart';
 import 'package:phone_store/main/pages/mainPage/chat_with_seller.dart';
+import 'package:phone_store/main/pages/mainPage/search_screen.dart';
+import 'package:phone_store/main/pages/order/checkout_order.dart';
 import 'package:phone_store/main/pages/shared_widgets/appbar_icon.dart';
 import 'package:phone_store/main/pages/shared_widgets/custom_card.dart';
+import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 import 'package:phone_store/models/feedback.dart';
 import 'package:phone_store/models/message_model.dart';
 import 'package:phone_store/models/order.dart';
 import 'package:phone_store/models/products.dart';
 import 'package:phone_store/models/variants.dart';
-import 'package:phone_store/main/pages/order/checkout_order.dart';
-import 'package:phone_store/main/pages/mainPage/search_page.dart';
 import 'package:phone_store/models/view_history.dart';
 import 'package:phone_store/provider/cart_provider.dart';
-import 'package:phone_store/main/pages/mainPage/cart_page.dart';
 import 'package:phone_store/provider/favorite_provider.dart';
 import 'package:phone_store/provider/product_provider.dart';
-import 'package:phone_store/main/pages/shared_widgets/safe_image.dart';
 import 'package:phone_store/services/recommendation_product_service.dart';
-import 'package:provider/provider.dart';
 
-class PhoneProfilePage extends StatefulWidget {
+class ProductDetail extends StatefulWidget {
+  static const routeName = '/product-detail';
+
   final String id;
-  static const routeName = '/phone_profile';
-  const PhoneProfilePage({super.key, required this.id});
+
+  const ProductDetail({super.key, required this.id});
 
   @override
-  State<PhoneProfilePage> createState() => _PhoneProfilePageState();
+  State<ProductDetail> createState() => _ProductDetailState();
 }
 
-class _PhoneProfilePageState extends State<PhoneProfilePage> {
+class _ProductDetailState extends State<ProductDetail> {
   late final PageController _pageController = PageController();
   final ValueNotifier<int> selectedVariantIndex = ValueNotifier<int>(0);
   final ValueNotifier<int> selectedVariantIndexB = ValueNotifier<int>(0);
@@ -860,8 +863,8 @@ class _PhoneProfilePageState extends State<PhoneProfilePage> {
 
                 Navigator.pushNamed(
                   context,
-                  MessagePage.routeName,
-                  arguments: MessagePage(
+                  ChatScreen.routeName,
+                  arguments: ChatScreen(
                     product: product,
                     productMessage: productMessage,
                   ),
